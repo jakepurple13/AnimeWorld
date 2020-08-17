@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/rounded_corner"
+    android:backgroundTint="@color/cardview_dark_background"
+    tools:ignore="HardcodedText"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--<com.agik.AGIKSwipeButton.View.Swipe_Button_View
+        android:id="@+id/slide_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView6"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:sb_swipe_bg_color="@color/alizarin"
+        app:sb_thumb_bg_color="@color/alizarin"
+        app:sb_swipe_animate_text="true"
+        app:sb_swipe_text="Delete">
+    </com.agik.AGIKSwipeButton.View.Swipe_Button_View>-->
+
+    <com.ncorti.slidetoact.SlideToActView
+        android:id="@+id/slide_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView6"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:slider_icon_color="@color/alizarin"
+        app:outer_color="@color/alizarin"
+        app:text="Delete" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Slide to Delete " />
+
+    <Button
+        android:id="@+id/delete_dismiss_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/slide_button"
+        android:layout_below="@id/slide_button"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/dialog_bg"
+        android:backgroundTint="@color/emeraldGreen"
+        android:text="Don't Delete" />
+
+    <TextView
+        android:id="@+id/all_download_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/delete_dismiss_button"
+        android:layout_alignStart="@+id/slide_button"
+        android:layout_alignBottom="@id/delete_dismiss_button"
+        android:layout_alignTop="@+id/delete_dismiss_button"
+        android:layout_marginEnd="16dp"
+        android:text="Current Progress: 100%" />
+
+</RelativeLayout>
