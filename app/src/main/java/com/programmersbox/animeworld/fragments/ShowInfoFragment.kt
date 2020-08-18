@@ -9,15 +9,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavArgsLazy
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.ncorti.slidetoact.SlideToActView
 import com.programmersbox.anime_sources.EpisodeInfo
 import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.animeworld.DownloadViewerActivity
+import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.ChapterItemBinding
 import com.programmersbox.animeworld.databinding.FragmentShowInfoBinding
 import com.programmersbox.animeworld.utils.folderLocation
 import com.programmersbox.dragswipe.DragSwipeAdapter
+import com.programmersbox.gsonutils.fromJson
 import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.thirdpartyutils.changeTint
 import com.tonyodev.fetch2.Fetch
@@ -40,8 +45,9 @@ import kotlinx.coroutines.launch
  * Use the [ShowInfoFragment] factory method to
  * create an instance of this fragment.
  */
-class ShowInfoFragment(private val showInfo: ShowInfo, private val disposable: CompositeDisposable) : Fragment() {
+class ShowInfoFragment : Fragment() {
 
+    private val disposable: CompositeDisposable = CompositeDisposable()
     private val adapter: ChapterAdapter by lazy { ChapterAdapter() }
 
     private lateinit var binding: FragmentShowInfoBinding
@@ -57,25 +63,33 @@ class ShowInfoFragment(private val showInfo: ShowInfo, private val disposable: C
         return binding.root
     }
 
+    private val args: ShowInfoFragmentArgs by navArgs()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewDownloads.setOnClickListener { context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java)) }
+        //TODO: maybe try by making recent and all into host nav, and new adapters and try that?
+        //viewDownloads.setOnClickListener { context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java)) }
+        viewDownloads.setOnClickListener { findNavController().navigate(R.id.action_showInfoFragment_to_downloadViewerActivity) }
 
         favoriteshow.changeTint(Color.WHITE)
 
         showInfoChapterList.adapter = adapter
 
+        println(args)
+        println(args.showInfo)
+
         GlobalScope.launch {
-            showInfo.getEpisodeInfo()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy {
+            args.showInfo?.fromJson<ShowInfo>()?.getEpisodeInfo()
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribeBy {
+                    println(it)
                     binding.show = it
                     binding.executePendingBindings()
                     adapter.addItems(it.episodes)
                 }
-                .addTo(disposable)
+                ?.addTo(disposable)
         }
 
     }

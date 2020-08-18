@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recent_nav"
+    app:startDestination="@id/recentFragment">
+    <fragment
+        android:id="@+id/recentFragment"
+        android:name="com.programmersbox.animeworld.fragments.RecentFragment"
+        android:label="fragment_recent"
+        tools:layout="@layout/fragment_recent" >
+        <action
+            android:id="@+id/action_recentFragment_to_showInfoFragment"
+            app:destination="@id/showInfoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/showInfoFragment"
+        tools:layout="@layout/fragment_show_info"
+        android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
+        android:label="ShowInfoFragment" >
+        <action
+            android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
+            app:destination="@id/downloadViewerActivity" />
+        <argument
+            android:name="showInfo"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <action
+            android:id="@+id/action_showInfoFragment_pop"
+            app:popUpTo="@id/showInfoFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <activity
+        android:id="@+id/downloadViewerActivity"
+        android:name="com.programmersbox.animeworld.DownloadViewerActivity"
+        android:label="activity_download_viewer"
+        tools:layout="@layout/activity_download_viewer" />
+</navigation>

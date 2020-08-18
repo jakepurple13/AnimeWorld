@@ -18,7 +18,7 @@ object GogoAnimeApi : ShowApi(
         try {
             it(doc.allElements.select("div.dl-item").map {
                 val tempUrl = it.select("div.name").select("a[href^=http]").attr("abs:href")
-                ShowInfo(it.select("div.name").text(), tempUrl.substring(0, tempUrl.indexOf("/episode")), this)
+                ShowInfo(it.select("div.name").text(), tempUrl.substring(0, tempUrl.indexOf("/episode")), Sources.GOGOANIME)
             })
         } catch (e: Exception) {
             it(e)
@@ -28,7 +28,7 @@ object GogoAnimeApi : ShowApi(
     override fun getList(doc: Document): Single<List<ShowInfo>> = Single.create {
         try {
             it(doc.allElements.select("ul.arrow-list").select("li")
-                .map { ShowInfo(it.text(), it.select("a[href^=http]").attr("abs:href"), this) })
+                .map { ShowInfo(it.text(), it.select("a[href^=http]").attr("abs:href"), Sources.GOGOANIME) })
         } catch (e: Exception) {
             it(e)
         }

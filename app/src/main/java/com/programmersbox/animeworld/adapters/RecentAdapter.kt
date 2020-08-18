@@ -1,17 +1,21 @@
 package com.programmersbox.animeworld.adapters
 
-import android.content.Context
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
 import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.RecentItemBinding
-import com.programmersbox.animeworld.fragments.ShowInfoFragment
+import com.programmersbox.animeworld.fragments.*
 import com.programmersbox.dragswipe.DragSwipeAdapter
-import com.programmersbox.helpfulutils.layoutInflater
+import com.programmersbox.gsonutils.toJson
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 class RecentAdapter(private val context: Fragment, private val disposable: CompositeDisposable) : DragSwipeAdapter<ShowInfo, RecentHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder =
@@ -24,15 +28,30 @@ class RecentHolder(private val binding: RecentItemBinding) : RecyclerView.ViewHo
 
     fun bind(info: ShowInfo, context: Fragment, disposable: CompositeDisposable) {
         binding.show = info
-        binding.root.setOnClickListener {
-            val f = ShowInfoFragment(info, disposable)
-            context.fragmentManager?.beginTransaction()
-                //?.replace(R.id.container, f)
-                ?.add(R.id.container, f)
+        /*binding.root.setOnClickListener {
+            //val f = ShowInfoFragment(info, disposable)
+            *//*context.fragmentManager?.beginTransaction()
+                ?.replace(R.id.container, f)
+                //?.add(R.id.container, f)
                 //?.add(f, null)
                 //?.hide(context)
                 ?.addToBackStack(null)
-                ?.commit()
+                ?.commit()*//*
+
+            //f?.let { it1 -> context.findNavController().navigate(it1) }
+        }*/
+        /*binding.root.setOnClickListener(
+            when (context) {
+                is RecentFragment -> RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson())
+                is AllFragment -> AllFragmentDirections.actionAllFragmentToShowInfoFragment(info.toJson())
+                else -> null
+            }?.let { it1 -> Navigation.createNavigateOnClickListener(it1) }
+        )*/
+        /*binding.root.setOnClickListener(
+            Navigation.createNavigateOnClickListener(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
+        )*/
+        binding.root.setOnClickListener {
+            NavHostFragment.findNavController(context).navigate(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
         }
         binding.executePendingBindings()
     }

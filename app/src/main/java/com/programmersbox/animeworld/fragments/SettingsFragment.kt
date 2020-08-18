@@ -16,7 +16,9 @@ import com.programmersbox.rxutils.invoke
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 
-class SettingsFragment(private val disposable: CompositeDisposable) : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat() {
+
+    private val disposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)

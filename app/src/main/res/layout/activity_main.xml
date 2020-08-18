@@ -13,9 +13,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />-->
 
-    <FrameLayout
+    <!--<FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" />-->
+    <!--android:name="com.programmersbox.animeworld.fragments.ShowsFragment"-->
+    <!--android:name="androidx.navigation.fragment.NavHostFragment"-->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mainShows"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/main_navigation" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:layout_anchorGravity="bottom"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
+        app:menu="@menu/main_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
