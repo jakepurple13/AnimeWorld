@@ -1,21 +1,14 @@
 package com.programmersbox.animeworld.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupWithNavController
-import androidx.viewpager.widget.ViewPager
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.StatePager
-import com.programmersbox.loggingutils.Loged
-import com.programmersbox.loggingutils.f
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_shows.*
 
 
 class ShowsFragment(
@@ -30,15 +23,15 @@ class ShowsFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //pager.add(RecentFragment())
+        /*pager.add(RecentFragment())
         //pager.add(NavHostFragment.create(R.navigation.recent_nav))
-        //pager.add(AllFragment())
-        //pager.add(SettingsFragment())
+        pager.add(AllFragment())
+        pager.add(SettingsFragment())
 
-        /*viewPager.adapter = pager
-        viewPager.offscreenPageLimit = 5
+        viewPager.adapter = pager
+        viewPager.offscreenPageLimit = 5*/
 
-        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        /*viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
                 //TODO("Not yet implemented")
             }
@@ -53,17 +46,17 @@ class ShowsFragment(
                     1 -> R.id.all
                     2 -> R.id.settings
                     else -> 0
-                }*//*
+                }*//**//*
 
                 (prevMenuItem ?: navLayout.menu.getItem(0))?.isCheckable = false
 
-                *//*if (prevMenuItem != null) {
+                *//**//*if (prevMenuItem != null) {
                     prevMenuItem?.isChecked = false ?:
                 } else {
                     navLayout.menu.getItem(0).isChecked = false
                 }*//*
-                navLayout.menu.getItem(position).isChecked = true
-                prevMenuItem = navLayout.menu.getItem(position)
+                *//*navLayout.menu.getItem(position).isChecked = true
+                prevMenuItem = navLayout.menu.getItem(position)*//*
             }
 
         })*/

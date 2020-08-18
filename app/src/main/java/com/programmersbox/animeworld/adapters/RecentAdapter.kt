@@ -2,19 +2,10 @@ package com.programmersbox.animeworld.adapters
 
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavDirections
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
 import com.programmersbox.anime_sources.ShowInfo
-import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.RecentItemBinding
-import com.programmersbox.animeworld.fragments.*
 import com.programmersbox.dragswipe.DragSwipeAdapter
-import com.programmersbox.gsonutils.toJson
 import io.reactivex.disposables.CompositeDisposable
 
 class RecentAdapter(private val context: Fragment, private val disposable: CompositeDisposable) : DragSwipeAdapter<ShowInfo, RecentHolder>() {
@@ -51,7 +42,7 @@ class RecentHolder(private val binding: RecentItemBinding) : RecyclerView.ViewHo
             Navigation.createNavigateOnClickListener(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
         )*/
         binding.root.setOnClickListener {
-            NavHostFragment.findNavController(context).navigate(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
+            //NavHostFragment.findNavController(context).navigate(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
         }
         binding.executePendingBindings()
     }

@@ -1,28 +1,29 @@
 package com.programmersbox.animeworld.fragments
 
 import android.Manifest
-import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavArgsLazy
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.ncorti.slidetoact.SlideToActView
 import com.programmersbox.anime_sources.EpisodeInfo
 import com.programmersbox.anime_sources.ShowInfo
-import com.programmersbox.animeworld.DownloadViewerActivity
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.ChapterItemBinding
 import com.programmersbox.animeworld.databinding.FragmentShowInfoBinding
 import com.programmersbox.animeworld.utils.folderLocation
 import com.programmersbox.dragswipe.DragSwipeAdapter
 import com.programmersbox.gsonutils.fromJson
+import com.programmersbox.helpfulutils.Range
+import com.programmersbox.helpfulutils.animateChildren
 import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.thirdpartyutils.changeTint
 import com.tonyodev.fetch2.Fetch
@@ -67,8 +68,6 @@ class ShowInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //TODO: maybe try by making recent and all into host nav, and new adapters and try that?
         //viewDownloads.setOnClickListener { context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java)) }
         viewDownloads.setOnClickListener { findNavController().navigate(R.id.action_showInfoFragment_to_downloadViewerActivity) }
 
@@ -88,10 +87,65 @@ class ShowInfoFragment : Fragment() {
                     binding.show = it
                     binding.executePendingBindings()
                     adapter.addItems(it.episodes)
+                    activity?.actionBar?.title = it.name
+
                 }
                 ?.addTo(disposable)
         }
 
+        moreInfoSetup()
+
+    }
+
+    private fun moreInfoSetup() {
+        var set = ConstraintRangeSet(
+            showInfoFullLayout,
+            ConstraintRanges(
+                showInfoFullLayout,
+                ConstraintSet().apply { clone(showInfoFullLayout) },
+                ConstraintSet().apply { clone(this@ShowInfoFragment.requireContext(), R.layout.fragment_show_info_alt) }
+            ),
+            ConstraintRanges(
+                showInfoLayout,
+                ConstraintSet().apply { clone(showInfoLayout) },
+                ConstraintSet().apply { clone(this@ShowInfoFragment.requireContext(), R.layout.show_info_detail_layout_alt) }
+            )
+        )
+        moreInfo.setOnClickListener { set++ }
+    }
+
+    private class ConstraintRangeSet(private val rootLayout: ConstraintLayout, vararg items: ConstraintRanges) : Range<ConstraintRanges>() {
+
+        override val itemList: List<ConstraintRanges> = items.toList()
+
+        override operator fun inc(): ConstraintRangeSet {
+            super.inc()
+            rootLayout.animateChildren {
+                itemList.forEach {
+                    it.inc()
+                    it.item.applyTo(it.layout)
+                }
+            }
+            return this
+        }
+
+        override operator fun dec(): ConstraintRangeSet {
+            super.dec()
+            rootLayout.animateChildren {
+                itemList.forEach {
+                    it.dec()
+                    it.item.applyTo(it.layout)
+                }
+            }
+            return this
+        }
+
+        override fun onChange(current: Int, item: ConstraintRanges) = Unit
+    }
+
+    private class ConstraintRanges(val layout: ConstraintLayout, vararg items: ConstraintSet) : Range<ConstraintSet>() {
+        override val itemList: List<ConstraintSet> = items.toList()
+        override fun onChange(current: Int, item: ConstraintSet) = Unit
     }
 
     inner class ChapterAdapter : DragSwipeAdapter<EpisodeInfo, ChapterHolder>() {

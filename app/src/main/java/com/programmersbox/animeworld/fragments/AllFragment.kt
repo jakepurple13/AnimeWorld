@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
-import com.programmersbox.animeworld.adapters.RecentAdapter
 import com.programmersbox.animeworld.databinding.RecentItemBinding
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
@@ -44,15 +43,15 @@ class AllFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        allAnimeList.adapter = adapter
-        allRefresh.isRefreshing = true
+        allAnimeList?.adapter = adapter
+        allRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
         sourcePublish
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { sourceLoad(it) }
             .addTo(disposable)
-        allRefresh.setOnRefreshListener { context?.currentSource?.let { sourceLoad(it) } }
+        allRefresh?.setOnRefreshListener { context?.currentSource?.let { sourceLoad(it) } }
         search_info
             .textChanges()
             .subscribeOn(Schedulers.io())
@@ -76,10 +75,10 @@ class AllFragment : Fragment() {
                     adapter.setListNotify(it)
                     currentList.clear()
                     currentList.addAll(it)
-                    allRefresh.isRefreshing = false
+                    allRefresh?.isRefreshing = false
                     activity?.runOnUiThread {
-                        search_layout.suffixText = "${it.size}"
-                        search_layout.hint = "Search: ${requireContext().currentSource.name}"
+                        search_layout?.suffixText = "${it.size}"
+                        search_layout?.hint = "Search: ${requireContext().currentSource.name}"
                     }
                 }
                 .addTo(disposable)
@@ -101,7 +100,7 @@ class AllFragment : Fragment() {
         override fun RecentHolder.onBind(item: ShowInfo, position: Int) = bind(item)
     }
 
-    inner class RecentHolder(private val binding: RecentItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class RecentHolder(private val binding: RecentItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(info: ShowInfo) {
             binding.show = info
@@ -110,9 +109,9 @@ class AllFragment : Fragment() {
             )*/
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                val f = AllFragmentDirections.actionAllFragmentToShowInfoFragment(info.toJson())
+                val f = AllFragmentDirections.actionAllFragment2ToShowInfoFragment2(info.toJson())
                 println(f)
-                findNavController().navigate(f)
+                binding.root.findNavController().navigate(f)
             }
             binding.executePendingBindings()
         }

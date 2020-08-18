@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_nav"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.programmersbox.animeworld.fragments.SettingsFragment"
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_settingsFragment2_to_downloadViewerActivity3"
+            app:destination="@id/downloadViewerActivity3" />
+    </fragment>
+    <activity
+        android:id="@+id/downloadViewerActivity3"
+        android:name="com.programmersbox.animeworld.DownloadViewerActivity"
+        android:label="activity_download_viewer"
+        tools:layout="@layout/activity_download_viewer" />
+</navigation>

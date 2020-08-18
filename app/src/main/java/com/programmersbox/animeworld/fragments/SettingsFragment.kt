@@ -1,13 +1,11 @@
 package com.programmersbox.animeworld.fragments
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.preference.DropDownPreference
+import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.programmersbox.anime_sources.Sources
-import com.programmersbox.animeworld.DownloadViewerActivity
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
@@ -24,7 +22,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         findPreference<Preference>("view_downloads")?.setOnPreferenceClickListener {
-            context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
+            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
+            findNavController().navigate(R.id.action_settingsFragment2_to_downloadViewerActivity3)
             true
         }
 

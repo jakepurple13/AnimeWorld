@@ -2,38 +2,38 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/recent_nav"
-    app:startDestination="@id/recentFragment">
-    <fragment
-        android:id="@+id/recentFragment"
-        android:name="com.programmersbox.animeworld.fragments.RecentFragment"
-        android:label="Recent"
-        tools:layout="@layout/fragment_recent" >
-        <action
-            android:id="@+id/action_recentFragment_to_showInfoFragment"
-            app:destination="@id/showInfoFragment" />
-    </fragment>
+    android:id="@+id/all_nav"
+    app:startDestination="@id/allFragment">
 
     <fragment
-        android:id="@+id/showInfoFragment"
-        tools:layout="@layout/fragment_show_info"
-        android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
-        android:label="ShowInfoFragment" >
+        android:id="@+id/allFragment"
+        android:name="com.programmersbox.animeworld.fragments.AllFragment"
+        android:label="AnimeWorld"
+        tools:layout="@layout/fragment_all">
         <action
-            android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
-            app:destination="@id/downloadViewerActivity" />
+            android:id="@+id/action_allFragment2_to_showInfoFragment2"
+            app:destination="@id/showInfoFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/showInfoFragment2"
+        android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
+        tools:layout="@layout/fragment_show_info"
+        android:label="ShowInfoFragment">
         <argument
             android:name="showInfo"
+            android:defaultValue="null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
+            app:nullable="true" />
         <action
             android:id="@+id/action_showInfoFragment_pop"
             app:popUpTo="@id/showInfoFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_showInfoFragment2_to_downloadViewerActivity2"
+            app:destination="@id/downloadViewerActivity2" />
     </fragment>
     <activity
-        android:id="@+id/downloadViewerActivity"
+        android:id="@+id/downloadViewerActivity2"
         android:name="com.programmersbox.animeworld.DownloadViewerActivity"
         android:label="activity_download_viewer"
         tools:layout="@layout/activity_download_viewer" />

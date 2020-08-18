@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/recent"
+        android:id="@+id/recent_nav"
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="Recent" />
 
     <item
-        android:id="@+id/all"
+        android:id="@+id/all_nav"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="All" />
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/settings_nav"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="Settings" />
 

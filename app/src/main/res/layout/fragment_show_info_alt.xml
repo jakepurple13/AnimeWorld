@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="show"
             type="com.programmersbox.anime_sources.Episode" />
@@ -18,7 +19,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/showInfoLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginBottom="5dp"
             app:layout_constraintBottom_toTopOf="@id/optionsBar"
             app:layout_constraintTop_toTopOf="parent">
@@ -87,40 +88,6 @@
 
             </ScrollView>
 
-            <ScrollView
-                android:id="@+id/genreLists"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/descriptionLayout"
-                app:layout_constraintEnd_toEndOf="@id/showInfoCover"
-                app:layout_constraintStart_toStartOf="@id/showInfoCover"
-                app:layout_constraintTop_toBottomOf="@id/showInfoCover">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/genreList"
-                    app:genreList="@{show.genres}"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:text="Comedy"
-                        tools:visibility="visible" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:text="Comedy"
-                        tools:visibility="visible" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </ScrollView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -130,7 +97,7 @@
             android:layout_below="@id/showInfoLayout"
             android:layout_marginHorizontal="5dp"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/showChapterListLayout"
+            app:layout_constraintBottom_toTopOf="@id/moreInfo"
             app:layout_constraintTop_toBottomOf="@id/showInfoLayout">
 
             <com.google.android.material.button.MaterialButton
@@ -200,6 +167,7 @@
             android:layout_above="@id/moreInfo"
             android:layout_below="@id/optionsBar"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/moreInfo"
             app:layout_constraintTop_toBottomOf="@id/optionsBar">
@@ -218,18 +186,6 @@
                 app:layout_constraintTop_toBottomOf="@id/optionsBar" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <!--<androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/showInfoChapterList"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_above="@id/moreInfo"
-            android:layout_below="@id/optionsBar"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/moreInfo"
-            app:layout_constraintTop_toBottomOf="@id/optionsBar"
-            tools:listitem="@layout/chapter_list_item" />-->
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/moreInfo"
