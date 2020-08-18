@@ -1,6 +1,7 @@
 package com.programmersbox.animeworld.fragments
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
@@ -21,6 +22,7 @@ import com.programmersbox.animeworld.utils.folderLocation
 import com.programmersbox.dragswipe.*
 import com.programmersbox.helpfulutils.layoutInflater
 import com.programmersbox.helpfulutils.requestPermissions
+import com.programmersbox.helpfulutils.stringForTime
 import com.programmersbox.loggingutils.Loged
 import com.programmersbox.loggingutils.f
 import kotlinx.android.synthetic.main.fragment_view_videos.*
@@ -140,6 +142,7 @@ class ViewVideosFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoHolder =
             VideoHolder(context.layoutInflater.inflate(R.layout.video_layout, parent, false))
 
+        @SuppressLint("SetTextI18n")
         override fun VideoHolder.onBind(item: File, position: Int) {
             val duration = try {
                 val retriever = MediaMetadataRetriever()
@@ -170,7 +173,14 @@ class ViewVideosFragment : Fragment() {
             }
 
             itemView.video_runtime.text = runTimeString
-            itemView.video_name.text = item.name
+            itemView.video_name.text = "${item.name} ${
+                if (context.getSharedPreferences("videos", Context.MODE_PRIVATE).contains(item.path)) "\nat ${
+                    context.getSharedPreferences(
+                        "videos",
+                        Context.MODE_PRIVATE
+                    ).getLong(item.path, 0).stringForTime()
+                }" else ""
+            }"
 
             itemView.setOnClickListener(
                 Navigation.createNavigateOnClickListener(
@@ -192,8 +202,6 @@ class ViewVideosFragment : Fragment() {
 
     }
 
-    class VideoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    }
+    class VideoHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
 }

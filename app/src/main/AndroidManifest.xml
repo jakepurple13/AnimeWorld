@@ -18,7 +18,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="q">
-        <activity android:name=".VideoPlayerActivity"></activity>
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:screenOrientation="sensorLandscape" />
         <activity android:name=".DownloadViewerActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
