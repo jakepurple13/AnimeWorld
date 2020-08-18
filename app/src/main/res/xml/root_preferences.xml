@@ -5,7 +5,7 @@
 
         <Preference
             app:key="user_account"
-            app:icon="@mipmap/ic_launcher"
+            app:icon="@mipmap/big_logo"
             app:title="User" />
 
     </PreferenceCategory>
@@ -18,13 +18,18 @@
             app:title="Downloads" />
 
         <Preference
+            app:icon="@drawable/ic_baseline_video_library_24"
+            app:key="view_videos"
+            app:title="Videos" />
+
+        <Preference
             app:icon="@android:drawable/ic_menu_preferences"
             app:key="current_source"
             app:title="Current Source: " />
 
         <Preference
             app:title="Storage Location"
-            app:icon="@mipmap/ic_launcher"
+            app:icon="@drawable/ic_baseline_folder_24"
             app:key="folder_storage" />
 
         <!--<ListPreference

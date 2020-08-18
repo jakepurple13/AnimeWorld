@@ -29,7 +29,7 @@
             app:popUpTo="@id/showInfoFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_showInfoFragment2_to_downloadViewerActivity2"
+            android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
             app:destination="@id/downloadViewerActivity2" />
     </fragment>
     <activity
