@@ -45,6 +45,7 @@ class RecentFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         //navController.setGraph(R.navigation.recent_nav)
         //println(navController.graph)
+        println("CREATED!!!")
         recentAnimeList?.adapter = adapter
         recentRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }

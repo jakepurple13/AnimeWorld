@@ -2,15 +2,16 @@ package com.programmersbox.animeworld
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import androidx.core.content.FileProvider
+import com.facebook.stetho.Stetho
 import com.programmersbox.animeworld.utils.CustomFetchNotificationManager
 import com.programmersbox.loggingutils.Loged
-import com.tonyodev.fetch2.*
 import com.tonyodev.fetch2.Fetch.Impl.setDefaultInstanceConfiguration
+import com.tonyodev.fetch2.FetchConfiguration
+import com.tonyodev.fetch2.HttpUrlConnectionDownloader
+import com.tonyodev.fetch2.NetworkType
 import com.tonyodev.fetch2core.Downloader
 import com.tonyodev.fetch2core.Downloader.FileDownloaderType
-import com.tonyodev.fetch2rx.RxFetch
 import java.net.HttpURLConnection
 import javax.net.ssl.*
 
@@ -18,6 +19,7 @@ class AnimeWorldApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Stetho.initializeWithDefaults(this)
         Loged.FILTER_BY_PACKAGE_NAME = "programmersbox"
         val fetchConfiguration = FetchConfiguration.Builder(this)
             .enableAutoStart(true)

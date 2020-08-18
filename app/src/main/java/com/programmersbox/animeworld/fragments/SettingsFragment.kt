@@ -1,18 +1,30 @@
 package com.programmersbox.animeworld.fragments
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseUser
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
+import com.programmersbox.animeworld.firebase.FirebaseAuthentication
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
 import com.programmersbox.rxutils.invoke
+import com.programmersbox.thirdpartyutils.into
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -20,6 +32,45 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
+        FirebaseAuthentication.authenticate(requireContext())
+
+        findPreference<Preference>("folder_storage")?.let { p ->
+
+        }
+
+        findPreference<Preference>("user_account")?.let { p ->
+
+            fun accountChanges(user: FirebaseUser?) {
+                Glide.with(this@SettingsFragment)
+                    .load(user?.photoUrl ?: R.mipmap.ic_launcher)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.ic_launcher)
+                    .fallback(R.mipmap.ic_launcher)
+                    .into<Drawable> { resourceReady { image, _ -> p.icon = image } }
+                p.title = user?.displayName ?: "User"
+            }
+
+            FirebaseAuthentication.auth.addAuthStateListener {
+                accountChanges(it.currentUser)
+            }
+
+            accountChanges(FirebaseAuthentication.currentUser)
+
+            p.setOnPreferenceClickListener {
+                FirebaseAuthentication.currentUser?.let {
+                    MaterialAlertDialogBuilder(this@SettingsFragment.requireContext())
+                        .setTitle("Log Out?")
+                        .setMessage("Are you sure you want to log out?")
+                        .setPositiveButton("Yes") { d, _ ->
+                            FirebaseAuthentication.signOut()
+                            d.dismiss()
+                        }
+                        .setNegativeButton("No") { d, _ -> d.dismiss() }
+                        .show()
+                } ?: FirebaseAuthentication.signIn(requireActivity())
+                true
+            }
+        }
 
         findPreference<Preference>("view_downloads")?.setOnPreferenceClickListener {
             //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
@@ -46,5 +97,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
             sourcePublish.subscribe { p.title = "Current Source: ${it.name}" }
                 .addTo(disposable)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        FirebaseAuthentication.onActivityResult(requestCode, resultCode, data, requireContext())
+    }
+
+    private fun getBitmapFromURL(strURL: String?): Bitmap? = try {
+        val url = URL(strURL)
+        val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+        connection.doInput = true
+        connection.connect()
+        BitmapFactory.decodeStream(connection.inputStream)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
     }
 }

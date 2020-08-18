@@ -18,6 +18,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.programmersbox.anime_db.ShowDbModel
+import com.programmersbox.anime_sources.Episode
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.gsonutils.sharedPrefNotNullObjectDelegate
@@ -31,6 +33,15 @@ var Context.folderLocation: String by sharedPrefNotNullDelegate(
 )
 
 val sourcePublish = BehaviorSubject.create<Sources>()
+
+fun Episode.toShowModel() = ShowDbModel(
+    title = name,
+    description = description,
+    showUrl = source.url,
+    imageUrl = image ?: "",
+    source = source.sources,
+    numEpisodes = episodes.size
+)
 
 @BindingAdapter("coverImage")
 fun loadImage(view: ImageView, imageUrl: String?) {

@@ -1,16 +1,31 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/messages_header">
+
+    <PreferenceCategory app:title="Account">
 
         <Preference
-            app:key="view_downloads"
+            app:key="user_account"
+            app:icon="@mipmap/ic_launcher"
+            app:title="User" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="General">
+
+        <Preference
             app:icon="@android:drawable/stat_sys_download"
+            app:key="view_downloads"
             app:title="Downloads" />
 
         <Preference
             app:icon="@android:drawable/ic_menu_preferences"
-            app:title="Current Source: "
-            app:key="current_source" />
+            app:key="current_source"
+            app:title="Current Source: " />
+
+        <Preference
+            app:title="Storage Location"
+            app:icon="@mipmap/ic_launcher"
+            app:key="folder_storage" />
 
         <!--<ListPreference
             app:defaultValue="reply"
@@ -26,7 +41,7 @@
 
         <SwitchPreferenceCompat
             app:key="sync"
-            app:title="@string/sync_title" />
+            app:title="Check for Updates Periodically" />
 
         <SwitchPreferenceCompat
             app:dependency="sync"
