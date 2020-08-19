@@ -50,9 +50,7 @@ import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.NetworkType
 import com.tonyodev.fetch2.Priority
 import com.tonyodev.fetch2.Request
-import com.tonyodev.fetch2core.Func
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Flowables
@@ -202,7 +200,6 @@ class ShowInfoFragment : Fragment() {
 
         markChapters.setOnClickListener {
             val checked = adapter.currentList
-
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Mark Episodes As...")
                 .setMultiChoiceItems(
@@ -215,11 +212,11 @@ class ShowInfoFragment : Fragment() {
                 .show()
         }
 
-        moreOptions.setOnClickListener {
-            PopupMenu(requireContext(), it).apply {
+        moreOptions.setOnClickListener { v ->
+            PopupMenu(requireContext(), v).apply {
                 inflate(R.menu.show_info_menu)
                 setOnMenuItemClickListener {
-                    when(it.itemId) {
+                    when (it.itemId) {
                         R.id.markAll -> {
                             Toast.makeText(requireContext(), "asdf", Toast.LENGTH_SHORT).show()
                         }

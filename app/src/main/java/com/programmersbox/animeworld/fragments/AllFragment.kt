@@ -71,6 +71,14 @@ class AllFragment : BaseFragment() {
                 }
             }
             .addTo(disposable)
+
+        scrollToTop.setOnClickListener {
+            GlobalScope.launch {
+                activity?.runOnUiThread { allAnimeList?.smoothScrollToPosition(0) }
+                delay(500)
+                activity?.runOnUiThread { allAnimeList?.scrollToPosition(0) }
+            }
+        }
     }
 
     private fun sourceLoad(sources: Sources) {

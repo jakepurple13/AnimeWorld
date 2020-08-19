@@ -103,10 +103,8 @@ class ViewVideosFragment : Fragment() {
                     //TODO: maaaaybe do a redirect fragment?
                     //TODO: Clean up VideoPlayerActivity
                     //TODO: Add favorites to recent/all items
-                    //TODO: Add a scroll to top button to the right of the search bar in AllFragment
                     //TODO: maybe add a watch list?
-                    //TODO: maybe a watch later?
-                    //TODO: add a hamburger menu to the options bar in ShowInfoFragment
+                    //TODO: maybe add a watch later?
                     //TODO: make sure that episodes watched firebase is working
                 }
             }
