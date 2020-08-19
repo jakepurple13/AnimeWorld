@@ -10,9 +10,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
-import com.programmersbox.animeworld.utils.currentSource
-import com.programmersbox.animeworld.utils.setupWithNavController
-import com.programmersbox.animeworld.utils.sourcePublish
+import com.programmersbox.animeworld.utils.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
@@ -81,6 +79,10 @@ class MainActivity : AppCompatActivity() {
 
         sourcePublish
             .subscribe { currentSource = it }
+            .addTo(disposable)
+
+        downloadOrStreamPublish
+            .subscribe { downloadOrStream = it }
             .addTo(disposable)
     }
 

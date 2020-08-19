@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -171,6 +172,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             }
         }
+
+        findPreference<SwitchPreferenceCompat>("download_or_stream")?.let { s ->
+            s.icon = ContextCompat.getDrawable(
+                requireContext(),
+                if (requireContext().downloadOrStream) android.R.drawable.stat_sys_download else R.drawable.ic_baseline_view_stream_24
+            )
+            s.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    //requireContext().downloadOrStream = newValue
+                    downloadOrStreamPublish(newValue)
+                    s.icon = ContextCompat.getDrawable(
+                        requireContext(),
+                        if (newValue) android.R.drawable.stat_sys_download else R.drawable.ic_baseline_view_stream_24
+                    )
+                }
+                true
+            }
+
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

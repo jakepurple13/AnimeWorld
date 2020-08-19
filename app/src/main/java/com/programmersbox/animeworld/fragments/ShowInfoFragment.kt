@@ -9,12 +9,15 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.ncorti.slidetoact.SlideToActView
 import com.programmersbox.anime_db.EpisodeWatched
@@ -26,11 +29,14 @@ import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.ChapterItemBinding
 import com.programmersbox.animeworld.databinding.FragmentShowInfoBinding
 import com.programmersbox.animeworld.firebase.FirebaseDb
+import com.programmersbox.animeworld.utils.downloadOrStream
+import com.programmersbox.animeworld.utils.downloadOrStreamPublish
 import com.programmersbox.animeworld.utils.folderLocation
 import com.programmersbox.animeworld.utils.toShowModel
 import com.programmersbox.dragswipe.CheckAdapter
 import com.programmersbox.dragswipe.CheckAdapterInterface
 import com.programmersbox.dragswipe.DragSwipeAdapter
+import com.programmersbox.dragswipe.get
 import com.programmersbox.flowutils.collectOnUi
 import com.programmersbox.flowutils.invoke
 import com.programmersbox.gsonutils.fromJson
@@ -194,6 +200,36 @@ class ShowInfoFragment : Fragment() {
             .subscribe { adapter.update(it) { c, m -> c.url == m.url } }
             .addTo(disposable)
 
+        markChapters.setOnClickListener {
+            val checked = adapter.currentList
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Mark Episodes As...")
+                .setMultiChoiceItems(
+                    episode.episodes.map { it.name }.toTypedArray(),
+                    BooleanArray(adapter.itemCount) { i -> checked.any { it.url == adapter[i].url } }
+                ) { _, i, _ ->
+                    (showInfoChapterList.findViewHolderForAdapterPosition(i) as? ChapterAdapter.ChapterHolder)?.watchedButton?.performClick()
+                }
+                .setPositiveButton("Done") { d, _ -> d.dismiss() }
+                .show()
+        }
+
+        moreOptions.setOnClickListener {
+            PopupMenu(requireContext(), it).apply {
+                inflate(R.menu.show_info_menu)
+                setOnMenuItemClickListener {
+                    when(it.itemId) {
+                        R.id.markAll -> {
+                            Toast.makeText(requireContext(), "asdf", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    true
+                }
+            }.show()
+
+        }
+
     }
 
     private fun moreInfoSetup() {
@@ -261,6 +297,7 @@ class ShowInfoFragment : Fragment() {
         override fun ChapterHolder.onBind(item: EpisodeInfo, position: Int) = bind(item, showUrl)
 
         inner class ChapterHolder(private val binding: ChapterItemBinding) : RecyclerView.ViewHolder(binding.root) {
+            val watchedButton = binding.watchedButton
             fun bind(episodeInfo: EpisodeInfo, showUrl: String?) {
                 binding.episode = episodeInfo
                 binding.executePendingBindings()
@@ -286,19 +323,48 @@ class ShowInfoFragment : Fragment() {
                                 .show()
                         }
                 }
+
+                downloadOrStreamPublish
+                    .subscribe { binding.okayToDownload.text = if (it) "Download" else "Stream" }
+                    .addTo(disposable)
                 binding.okayToDownload.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
                     override fun onSlideComplete(view: SlideToActView) {
-                        activity?.requestPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE) {
-                            if (it.isGranted) {
-                                GlobalScope.launch {
-                                    fetchIt(episodeInfo)
-                                    delay(500)
-                                    activity?.runOnUiThread {
-                                        view.resetSlider()
-                                        binding.watchedButton.isChecked = true
-                                    }
-                                }
+                        if (requireContext().downloadOrStream) {
+                            downloadVideo(view, episodeInfo)
+                        } else {
+                            streamVideo(view, episodeInfo)
+                        }
+                    }
+                }
+            }
+
+            private fun downloadVideo(view: SlideToActView, episodeInfo: EpisodeInfo) {
+                activity?.requestPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE) {
+                    if (it.isGranted) {
+                        GlobalScope.launch {
+                            fetchIt(episodeInfo)
+                            delay(500)
+                            activity?.runOnUiThread {
+                                view.resetSlider()
+                                binding.watchedButton.isChecked = true
                             }
+                        }
+                    }
+                }
+            }
+
+            private fun streamVideo(view: SlideToActView, episodeInfo: EpisodeInfo) {
+                GlobalScope.launch {
+                    val link = episodeInfo.getVideoLink().blockingGet()
+                    delay(500)
+                    activity?.runOnUiThread {
+                        view.resetSlider()
+                        binding.watchedButton.isChecked = true
+                        link.firstOrNull()?.let {
+                            findNavController()
+                                .navigate(
+                                    ShowInfoFragmentDirections.actionShowInfoFragment2ToVideoPlayerActivity2(it.link.orEmpty(), episodeInfo.name)
+                                )
                         }
                     }
                 }
@@ -338,7 +404,7 @@ class ShowInfoFragment : Fragment() {
             requestList.add(request)
 
         }
-        fetch.enqueue(requestList, Func {})
+        fetch.enqueue(requestList) {}
     }
 
     override fun onDestroy() {

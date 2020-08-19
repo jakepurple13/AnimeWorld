@@ -37,6 +37,10 @@ var Context.folderLocation: String by sharedPrefNotNullDelegate(
 
 var Context.updateCheck: Boolean by sharedPrefNotNullDelegate(true)
 
+var Context.downloadOrStream: Boolean by sharedPrefNotNullDelegate(true)
+
+val downloadOrStreamPublish = BehaviorSubject.create<Boolean>()
+
 val sourcePublish = BehaviorSubject.create<Sources>()
 
 fun Episode.toShowModel() = ShowDbModel(

@@ -137,7 +137,7 @@ class UpdateNotification(private val context: Context) {
         pair.second.hashCode() to NotificationDslBuilder.builder(
             context,
             "showChannel",
-            R.mipmap.round_logo
+            R.mipmap.round_logo_foreground
         ) {
             title = pair.second.title
             subText = pair.second.source.name
@@ -179,7 +179,7 @@ class UpdateNotification(private val context: Context) {
         list.first.forEach { pair -> n.notify(pair.first, pair.second) }
         if (list.first.isNotEmpty()) n.notify(
             42,
-            NotificationDslBuilder.builder(context, "showChannel", R.mipmap.round_logo) {
+            NotificationDslBuilder.builder(context, "showChannel", R.mipmap.round_logo_foreground) {
                 title = context.getText(R.string.app_name)
                 val size = list.first.size + currentNotificationSize
                 subText = context.resources.getQuantityString(R.plurals.updateAmount, size, size)
@@ -203,7 +203,7 @@ class UpdateNotification(private val context: Context) {
     }
 
     fun sendRunningNotification(max: Int, progress: Int, contextText: CharSequence = "") {
-        val notification = NotificationDslBuilder.builder(context, "updateCheckChannel", R.mipmap.round_logo) {
+        val notification = NotificationDslBuilder.builder(context, "updateCheckChannel", R.mipmap.round_logo_foreground) {
             onlyAlertOnce = true
             ongoing = true
             progress {
@@ -220,7 +220,7 @@ class UpdateNotification(private val context: Context) {
     }
 
     fun sendFinishedNotification() {
-        val notification = NotificationDslBuilder.builder(context, "updateCheckChannel", R.mipmap.round_logo) {
+        val notification = NotificationDslBuilder.builder(context, "updateCheckChannel", R.mipmap.round_logo_foreground) {
             onlyAlertOnce = true
             subText = "Finished"
             timeoutAfter = 750L

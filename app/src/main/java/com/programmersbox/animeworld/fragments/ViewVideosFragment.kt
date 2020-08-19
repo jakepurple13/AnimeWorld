@@ -100,8 +100,14 @@ class ViewVideosFragment : Fragment() {
                         listener
                     ).show()
                     //TODO: Get deep linking working, for show info, view downloads from shortcut, view videos from shortcut
+                    //TODO: maaaaybe do a redirect fragment?
                     //TODO: Clean up VideoPlayerActivity
                     //TODO: Add favorites to recent/all items
+                    //TODO: Add a scroll to top button to the right of the search bar in AllFragment
+                    //TODO: maybe add a watch list?
+                    //TODO: maybe a watch later?
+                    //TODO: add a hamburger menu to the options bar in ShowInfoFragment
+                    //TODO: make sure that episodes watched firebase is working
                 }
             }
         )

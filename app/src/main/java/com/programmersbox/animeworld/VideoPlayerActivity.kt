@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.programmersbox.animeworld.utils.downloadOrStream
 import com.programmersbox.helpfulutils.enableImmersiveMode
 import kotlinx.android.synthetic.main.activity_video_player.*
 import java.util.*
@@ -142,12 +143,13 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         playerView.player = player
 
-        val dOrS = intent.getBooleanExtra("download_or_stream", true)
-        if (dOrS) {
+        //download
+        if (downloadOrStream) {
             val dataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, "AnimeWorld"))
             val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(args.showPath.toUri())
             player.prepare(videoSource)
         } else {
+            //stream
             fun buildMediaSource(uri: Uri): MediaSource {
                 return ProgressiveMediaSource.Factory(
                     DefaultHttpDataSourceFactory("exoplayer-codelab")

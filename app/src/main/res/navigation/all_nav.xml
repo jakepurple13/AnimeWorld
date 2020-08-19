@@ -34,10 +34,25 @@
         <deepLink
             android:id="@+id/deepLink"
             app:uri="https://www.gogoanime1.com/watch/{url}" />
+        <action
+            android:id="@+id/action_showInfoFragment2_to_videoPlayerActivity2"
+            app:destination="@id/videoPlayerActivity2" />
     </fragment>
     <activity
         android:id="@+id/downloadViewerActivity2"
         android:name="com.programmersbox.animeworld.DownloadViewerActivity"
         android:label="activity_download_viewer"
         tools:layout="@layout/activity_download_viewer" />
+    <activity
+        android:id="@+id/videoPlayerActivity2"
+        android:name="com.programmersbox.animeworld.VideoPlayerActivity"
+        android:label="activity_video_player"
+        tools:layout="@layout/activity_video_player">
+        <argument
+            android:name="show_path"
+            app:argType="string" />
+        <argument
+            android:name="show_name"
+            app:argType="string" />
+    </activity>
 </navigation>

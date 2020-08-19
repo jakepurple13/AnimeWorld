@@ -37,7 +37,6 @@ class RecentFragment : BaseFragment() {
     private val adapter: RecentAdapter by lazy { RecentAdapter() }
 
     override fun viewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         //navController.setGraph(R.navigation.recent_nav)
         //println(navController.graph)
         println("CREATED!!!")

@@ -37,6 +37,14 @@
             app:key="folder_storage"
             app:title="Storage Location" />
 
+        <SwitchPreferenceCompat
+            app:title="Download or Stream"
+            app:summaryOn="Download"
+            app:summaryOff="Stream"
+            app:icon="@android:drawable/stat_sys_download"
+            app:defaultValue="true"
+            app:key="download_or_stream" />
+
         <!--<ListPreference
             app:defaultValue="reply"
             app:entries="@array/reply_entries"

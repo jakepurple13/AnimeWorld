@@ -43,7 +43,6 @@ class AllFragment : BaseFragment() {
     private val currentList = mutableListOf<ShowInfo>()
 
     override fun viewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         allAnimeList?.adapter = adapter
         allRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
@@ -62,11 +61,11 @@ class AllFragment : BaseFragment() {
             .subscribe {
                 adapter.setData(it)
                 activity?.runOnUiThread {
-                    GlobalScope.launch {
+                    /*GlobalScope.launch {
                         activity?.runOnUiThread { allAnimeList?.smoothScrollToPosition(0) }
                         delay(500)
                         activity?.runOnUiThread { allAnimeList?.scrollToPosition(0) }
-                    }
+                    }*/
                     //allAnimeList?.scrollToPosition(0)
                     search_layout?.suffixText = "${it.size}"
                 }
@@ -112,9 +111,7 @@ class AllFragment : BaseFragment() {
             )*/
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                val f = AllFragmentDirections.actionAllFragment2ToShowInfoFragment2(info.toJson())
-                println(f)
-                binding.root.findNavController().navigate(f)
+                binding.root.findNavController().navigate(AllFragmentDirections.actionAllFragment2ToShowInfoFragment2(info.toJson()))
             }
             binding.executePendingBindings()
         }

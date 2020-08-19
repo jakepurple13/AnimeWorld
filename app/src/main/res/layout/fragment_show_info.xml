@@ -188,6 +188,21 @@
                 app:icon="@android:drawable/ic_menu_share"
                 app:iconTint="#ffffff"
                 app:layout_constraintBottom_toBottomOf="@id/favoriteshow"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="@id/favoriteshow"
+                app:strokeColor="#ffffff"
+                tools:ignore="HardcodedText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/moreOptions"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="5dp"
+                android:textColor="#ffffff"
+                app:icon="@drawable/ic_baseline_more_vert_24"
+                app:iconTint="#ffffff"
+                app:layout_constraintBottom_toBottomOf="@id/favoriteshow"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/favoriteshow"
                 app:strokeColor="#ffffff"

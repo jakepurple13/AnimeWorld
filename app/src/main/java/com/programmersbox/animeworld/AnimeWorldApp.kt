@@ -96,7 +96,7 @@ class AnimeWorldApp : Application() {
                             .setInitialDelay(10, TimeUnit.SECONDS)
                             .build()
                     ).state.observeForever { println(it) }
-                }
+                } else work.cancelAllWork()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
