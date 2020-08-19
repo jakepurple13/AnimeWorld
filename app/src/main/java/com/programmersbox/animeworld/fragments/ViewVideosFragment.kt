@@ -2,15 +2,19 @@ package com.programmersbox.animeworld.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -65,8 +69,23 @@ class ViewVideosFragment : Fragment() {
                         override fun onDelete() {
                             val file = dragSwipeAdapter.removeItem(viewHolder.adapterPosition)
                             if (file.exists()) {
-                                Toast.makeText(requireContext(), if (file.delete()) "File Deleted" else "File Not Deleted", Toast.LENGTH_SHORT).show()
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                                    val deleteRequest = MediaStore.createDeleteRequest(requireContext().contentResolver, listOf(file.toUri()))
+                                    startIntentSenderForResult(
+                                        deleteRequest.intentSender,
+                                        123,
+                                        null,
+                                        0,
+                                        0,
+                                        0,
+                                        null
+                                    )
+                                } else {
+                                    Toast.makeText(requireContext(), if (file.delete()) "File Deleted" else "File Not Deleted", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
                             }
+
                         }
 
                         override fun onCancel() {
@@ -82,9 +101,8 @@ class ViewVideosFragment : Fragment() {
                     ).show()
                     //TODO: Get deep linking working, for show info, view downloads from shortcut, view videos from shortcut
                     //TODO: Clean up VideoPlayerActivity
-                    //TODO: get delete videos working
                     //TODO: implement firebase
-                    //TODO: implement update check
+                    //TODO: Add favorites to recent/all items
                 }
             }
         )
@@ -93,9 +111,23 @@ class ViewVideosFragment : Fragment() {
         view_video_refresh.setOnRefreshListener { loadVideos() }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            123 -> {
+                Toast.makeText(requireContext(), if (resultCode == Activity.RESULT_OK) "File Deleted" else "File Not Deleted", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
     private fun loadVideos() {
         view_video_refresh.isRefreshing = true
-        activity?.requestPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE) {
+        val permissions = listOfNotNull(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+        )
+        activity?.requestPermissions(*permissions.toTypedArray()) {
             if (it.isGranted) getStuff()
         }
     }

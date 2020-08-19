@@ -5,9 +5,13 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import androidx.core.content.FileProvider
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.facebook.stetho.Stetho
 import com.programmersbox.animeworld.utils.CustomFetchNotificationManager
+import com.programmersbox.animeworld.utils.UpdateWorker
 import com.programmersbox.animeworld.utils.updateCheck
 import com.programmersbox.helpfulutils.NotificationChannelImportance
 import com.programmersbox.helpfulutils.createNotificationChannel
@@ -20,6 +24,7 @@ import com.tonyodev.fetch2.NetworkType
 import com.tonyodev.fetch2core.Downloader
 import com.tonyodev.fetch2core.Downloader.FileDownloaderType
 import java.net.HttpURLConnection
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 
 class AnimeWorldApp : Application() {
@@ -63,7 +68,7 @@ class AnimeWorldApp : Application() {
                 val work = WorkManager.getInstance(context)
                 //work.cancelAllWork()
                 if (shouldCheck) {
-                    /*work.enqueueUniquePeriodicWork(
+                    work.enqueueUniquePeriodicWork(
                         "updateChecks",
                         ExistingPeriodicWorkPolicy.KEEP,
                         PeriodicWorkRequest.Builder(UpdateWorker::class.java, 1, TimeUnit.HOURS)
@@ -79,7 +84,7 @@ class AnimeWorldApp : Application() {
                             )
                             .setInitialDelay(10, TimeUnit.SECONDS)
                             .build()
-                    ).state.observeForever { println(it) }*/
+                    ).state.observeForever { println(it) }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

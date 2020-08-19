@@ -137,7 +137,7 @@ class ShowInfoFragment : Fragment() {
     private fun showSetup(episode: Episode) {
         favoriteshow.setOnClickListener {
 
-            fun addManga(show: Episode) {
+            fun addShow(show: Episode) {
                 Completable.concatArray(
                     //FirebaseDb.addManga2(mangaModel, count),
                     dao.insertShow(show.toShowModel()).subscribeOn(Schedulers.io())
@@ -158,7 +158,7 @@ class ShowInfoFragment : Fragment() {
                     .addTo(disposable)*/
             }
 
-            fun removeManga(show: Episode) {
+            fun removeShow(show: Episode) {
                 Completable.concatArray(
                     //FirebaseDb.removeManga2(mangaModel),
                     dao.deleteShow(show.toShowModel()).subscribeOn(Schedulers.io())
@@ -169,7 +169,7 @@ class ShowInfoFragment : Fragment() {
                     .addTo(disposable)
             }
 
-            if (isFavorite()) removeManga(episode) else addManga(episode)
+            if (isFavorite()) removeShow(episode) else addShow(episode)
         }
 
         dao.getShowById(episode.source.url)
@@ -297,6 +297,7 @@ class ShowInfoFragment : Fragment() {
                                     delay(500)
                                     activity?.runOnUiThread {
                                         view.resetSlider()
+                                        binding.watchedButton.isChecked = true
                                     }
                                 }
                             }
