@@ -14,12 +14,25 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.GenericTypeIndicator
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.ktx.toObjects
+import com.programmersbox.anime_db.EpisodeWatched
+import com.programmersbox.anime_db.ShowDbModel
+import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.loggingutils.Loged
+import com.programmersbox.loggingutils.f
 import com.programmersbox.loggingutils.fa
 import com.programmersbox.loggingutils.fd
+import com.programmersbox.gsonutils.fromJson
+import com.programmersbox.rxutils.toLatestFlowable
+import io.reactivex.Completable
+import io.reactivex.subjects.PublishSubject
 
 object FirebaseAuthentication {
 
@@ -133,7 +146,7 @@ object FirebaseAuthentication {
 object FirebaseDb {
 
     private const val DOCUMENT_ID = "favoriteShows"
-    private const val CHAPTERS_ID = "chaptersRead"
+    private const val CHAPTERS_ID = "episodesWatched"
 
     private val db = FirebaseFirestore.getInstance().apply {
         firestoreSettings = FirebaseFirestoreSettings.Builder()
@@ -148,8 +161,149 @@ object FirebaseDb {
 
     private fun <TResult> Task<TResult>.await(): TResult = Tasks.await(this)
 
-    private val mangaDoc2 get() = FirebaseAuthentication.currentUser?.let { db.collection("animeworld").document(DOCUMENT_ID).collection(it.uid) }
-    private val chapterDoc2 get() = FirebaseAuthentication.currentUser?.let { db.collection("animeworld").document(CHAPTERS_ID).collection(it.uid) }
+    private val showDoc2 get() = FirebaseAuthentication.currentUser?.let { db.collection("animeworld").document(DOCUMENT_ID).collection(it.uid) }
+    private val episodeDoc2 get() = FirebaseAuthentication.currentUser?.let { db.collection("animeworld").document(CHAPTERS_ID).collection(it.uid) }
+
+    private data class FirebaseAllShows(val first: String = DOCUMENT_ID, val second: List<FirebaseShowDbModel> = emptyList())
+
+    private data class FirebaseShowDbModel(
+        val title: String? = null,
+        val description: String? = null,
+        val showUrl: String? = null,
+        val imageUrl: String? = null,
+        val source: Sources? = null,
+        var numEpisodes: Int = 0,
+    )
+
+    private data class FirebaseEpisodeWatched(
+        val url: String? = null,
+        val name: String? = null,
+        val showUrl: String? = null,
+    )
+
+    private fun FirebaseShowDbModel.toShowDbModel() = ShowDbModel(
+        title.orEmpty(),
+        description.orEmpty(),
+        showUrl.orEmpty(),
+        imageUrl.orEmpty(),
+        source ?: Sources.GOGOANIME,
+        numEpisodes,
+    )
+
+    private fun ShowDbModel.toFirebaseShowDbModel() = FirebaseShowDbModel(
+        title,
+        description,
+        showUrl,
+        imageUrl,
+        source,
+        numEpisodes,
+    )
+
+    private fun FirebaseEpisodeWatched.toEpisodeModel() = EpisodeWatched(
+        url.orEmpty().pathToUrl(),
+        name.orEmpty(),
+        showUrl.orEmpty().pathToUrl(),
+    )
+
+    private fun EpisodeWatched.toFirebaseEpisodeWatched() = FirebaseEpisodeWatched(
+        url,
+        name,
+        showUrl,
+    )
+
+    private fun String.urlToPath() = replace("/", "<")
+    private fun String.pathToUrl() = replace("<", "/")
+
+    fun getAllShows() = showDoc2
+        ?.get()
+        ?.await()
+        ?.toObjects<FirebaseShowDbModel>()
+        ?.map { it.toShowDbModel() }
+        .orEmpty()
+
+    fun insertShow(showDbModel: ShowDbModel) = Completable.create { emitter ->
+        showDoc2?.document(showDbModel.showUrl.urlToPath())
+            ?.set(showDbModel.toFirebaseShowDbModel())
+            ?.addOnSuccessListener { emitter.onComplete() }
+            ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+    }
+
+    fun removeShow(showDbModel: ShowDbModel) = Completable.create { emitter ->
+        showDoc2?.document(showDbModel.showUrl.urlToPath())
+            ?.delete()
+            ?.addOnSuccessListener { emitter.onComplete() }
+            ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+    }
+
+    fun updateShow(showDbModel: ShowDbModel) = Completable.create { emitter ->
+        showDoc2?.document(showDbModel.showUrl.urlToPath())
+            ?.update("numEpisodes", showDbModel.numEpisodes)
+            ?.addOnSuccessListener { emitter.onComplete() }
+            ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+    }
+
+    fun insertEpisodeWatched(episodeWatched: EpisodeWatched) = Completable.create { emitter ->
+        episodeDoc2?.document(episodeWatched.showUrl.urlToPath())
+            ?.update("watched", FieldValue.arrayUnion(episodeWatched.toFirebaseEpisodeWatched()))
+            //?.collection(episodeWatched.url.urlToPath())
+            //?.document("watched")
+            //?.set(episodeWatched.toFirebaseEpisodeWatched())
+            ?.addOnSuccessListener { emitter.onComplete() }
+            ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+    }
+
+    fun removeEpisodeWatched(episodeWatched: EpisodeWatched) = Completable.create { emitter ->
+        episodeDoc2?.document(episodeWatched.showUrl.urlToPath())
+            ?.update("watched", FieldValue.arrayRemove(episodeWatched.toFirebaseEpisodeWatched()))
+            //?.collection(episodeWatched.url.urlToPath())
+            //?.document("watched")
+            //?.delete()
+            ?.addOnSuccessListener { emitter.onComplete() }
+            ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+        emitter.onComplete()
+    }
+
+    class FirebaseListener {
+
+        private var listener: ListenerRegistration? = null
+
+        fun getAllShowsFlowable() = PublishSubject.create<List<ShowDbModel>> { emitter ->
+            require(listener == null)
+            listener = showDoc2?.addSnapshotListener { value, error ->
+                value?.toObjects<FirebaseShowDbModel>()?.map { it.toShowDbModel() }?.let { emitter.onNext(it) }
+            }
+            if (listener == null) emitter.onNext(emptyList())
+        }.toLatestFlowable()
+
+        fun findShowByUrl(url: String?) = PublishSubject.create<Boolean> { emitter ->
+            require(listener == null)
+            listener = showDoc2?.whereEqualTo("showUrl", url?.urlToPath())?.addSnapshotListener { value, error ->
+                value?.toObjects<FirebaseShowDbModel>()?.map { it.toShowDbModel() }?.let { emitter.onNext(it.isNotEmpty()) }
+            }
+            if (listener == null) emitter.onNext(false)
+        }.toLatestFlowable()
+
+        fun getAllEpisodesByShow(showUrl: String) = PublishSubject.create<List<EpisodeWatched>> { emitter ->
+            require(listener == null)
+            listener = episodeDoc2
+                ?.document(showUrl.urlToPath())
+                ?.addSnapshotListener { value, error ->
+                    value?.toObject(Watched::class.java)?.watched
+                        ?.map { it.toEpisodeModel() }
+                        ?.let { emitter.onNext(it) }
+                }
+            if (listener == null) emitter.onNext(emptyList())
+        }.toLatestFlowable()
+
+        fun getAllEpisodesByShow(showDbModel: ShowDbModel) = getAllEpisodesByShow(showDbModel.showUrl)
+
+        fun unregister() {
+            listener?.remove()
+        }
+
+    }
+
+    private class Watched(val watched: List<FirebaseEpisodeWatched> = emptyList())
 
     /*suspend fun uploadAllItems2(dao: MangaDao, context: Context) {
         //Todo: make a workmanager request for this

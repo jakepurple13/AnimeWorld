@@ -13,8 +13,8 @@ interface ShowDao {
     @Query("SELECT * FROM FavoriteShow WHERE showUrl = :url")
     fun getShowById(url: String): Single<ShowDbModel>
 
-    @Query("SELECT * FROM FavoriteShow WHERE showUrl = :url")
-    fun getShowByIdFlow(url: String): Flowable<ShowDbModel>
+    @Query("SELECT COUNT(*) FROM FavoriteShow WHERE showUrl = :url")
+    fun getShowByIdFlow(url: String): Flowable<Int>
 
     @Query("SELECT * FROM FavoriteShow WHERE showUrl = :url")
     fun getShowByIdMaybe(url: String): Maybe<ShowDbModel>

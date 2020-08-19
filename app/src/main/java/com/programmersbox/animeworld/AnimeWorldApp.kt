@@ -10,6 +10,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.facebook.stetho.Stetho
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.programmersbox.animeworld.utils.CustomFetchNotificationManager
 import com.programmersbox.animeworld.utils.UpdateWorker
 import com.programmersbox.animeworld.utils.updateCheck
@@ -23,6 +24,7 @@ import com.tonyodev.fetch2.HttpUrlConnectionDownloader
 import com.tonyodev.fetch2.NetworkType
 import com.tonyodev.fetch2core.Downloader
 import com.tonyodev.fetch2core.Downloader.FileDownloaderType
+import io.reactivex.plugins.RxJavaPlugins
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
@@ -51,6 +53,15 @@ class AnimeWorldApp : Application() {
             .setNotificationManager(CustomFetchNotificationManager(this))
             .build()
         setDefaultInstanceConfiguration(fetchConfiguration)
+        RxJavaPlugins.setErrorHandler {
+            it.printStackTrace()
+            FirebaseCrashlytics.getInstance().recordException(it)
+            /*try {
+                //runOnUIThread { Toast.makeText(this, it.cause?.localizedMessage, Toast.LENGTH_SHORT).show() }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }*/
+        }
         /*RxFetch.getRxInstance(fetchConfiguration)
             .getDownloads().flowable
             .subscribe {

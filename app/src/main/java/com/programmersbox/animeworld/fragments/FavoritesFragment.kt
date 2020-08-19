@@ -19,6 +19,8 @@ import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.FavoriteItemBinding
+import com.programmersbox.animeworld.firebase.FirebaseDb
+import com.programmersbox.animeworld.utils.toShow
 import com.programmersbox.dragswipe.DragSwipeAdapter
 import com.programmersbox.dragswipe.DragSwipeDiffUtil
 import com.programmersbox.gsonutils.toJson
@@ -39,29 +41,37 @@ import java.util.concurrent.TimeUnit
  * Use the [FavoritesFragment] factory method to
  * create an instance of this fragment.
  */
-class FavoritesFragment : Fragment() {
+class FavoritesFragment : BaseFragment() {
 
-    override fun onCreateView(
+    /*override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favorites, container, false)
-    }
+    }*/
+
+    override val layoutId: Int get() = R.layout.fragment_favorites
 
     private val sourcePublisher = BehaviorSubject.createDefault(mutableListOf(*Sources.values()))
     private var sourcesList by behaviorDelegate(sourcePublisher)
     private val dao by lazy { ShowDatabase.getInstance(requireContext()).showDao() }
     private val disposable = CompositeDisposable()
     private val adapter by lazy { FavoriteAdapter() }
+    private val fireListener = FirebaseDb.FirebaseListener()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun viewCreated(view: View, savedInstanceState: Bundle?) {
         uiSetup()
 
+        val fired = fireListener.getAllShowsFlowable()
+
+        val dbFire = Flowables.combineLatest(
+            fired,
+            dao.getAllShow()
+        ) { fire, db -> (db + fire).groupBy(ShowDbModel::showUrl).map { it.value.maxByOrNull(ShowDbModel::numEpisodes)!! } }
+
         Flowables.combineLatest(
-            source1 = dao.getAllShow()
+            source1 = dbFire
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()),
             source2 = sourcePublisher.toLatestFlowable(),
@@ -153,10 +163,8 @@ class FavoritesFragment : Fragment() {
 
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                val showInfo = ShowInfo(info.title, info.showUrl, info.source)
-                val f = FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(showInfo.toJson())
-                println(f)
-                binding.root.findNavController().navigate(f)
+                binding.root.findNavController()
+                    .navigate(FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(info.toShow().toJson()))
             }
             binding.executePendingBindings()
         }
@@ -165,6 +173,7 @@ class FavoritesFragment : Fragment() {
 
     override fun onDestroy() {
         disposable.dispose()
+        fireListener.unregister()
         super.onDestroy()
     }
 

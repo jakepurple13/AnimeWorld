@@ -25,6 +25,7 @@ import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.ChapterItemBinding
 import com.programmersbox.animeworld.databinding.FragmentShowInfoBinding
+import com.programmersbox.animeworld.firebase.FirebaseDb
 import com.programmersbox.animeworld.utils.folderLocation
 import com.programmersbox.animeworld.utils.toShowModel
 import com.programmersbox.dragswipe.CheckAdapter
@@ -74,6 +75,8 @@ class ShowInfoFragment : Fragment() {
     private val isFavorite = MutableStateFlow(false)
 
     private val fetch = Fetch.getDefaultInstance()
+    private val showListener = FirebaseDb.FirebaseListener()
+    private val episodesListener = FirebaseDb.FirebaseListener()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -139,7 +142,7 @@ class ShowInfoFragment : Fragment() {
 
             fun addShow(show: Episode) {
                 Completable.concatArray(
-                    //FirebaseDb.addManga2(mangaModel, count),
+                    FirebaseDb.insertShow(show.toShowModel()),
                     dao.insertShow(show.toShowModel()).subscribeOn(Schedulers.io())
                 )
                     .subscribeOn(Schedulers.io())
@@ -160,7 +163,7 @@ class ShowInfoFragment : Fragment() {
 
             fun removeShow(show: Episode) {
                 Completable.concatArray(
-                    //FirebaseDb.removeManga2(mangaModel),
+                    FirebaseDb.removeShow(show.toShowModel()),
                     dao.deleteShow(show.toShowModel()).subscribeOn(Schedulers.io())
                 )
                     .subscribeOn(Schedulers.io())
@@ -172,27 +175,22 @@ class ShowInfoFragment : Fragment() {
             if (isFavorite()) removeShow(episode) else addShow(episode)
         }
 
-        dao.getShowById(episode.source.url)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onSuccess = { isFavorite(true) }, onError = { isFavorite(false) })
-            .addTo(disposable)
-
-        /*listener.findMangaByUrlFlowable(episode)
+        Flowables.combineLatest(
+            showListener.findShowByUrl(episode.source.url),
+            dao.getShowByIdFlow(episode.source.url)
+        ) { f, d -> f || d > 0 }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(isFavorite::invoke)
-            .addTo(disposable)*/
+            .addTo(disposable)
 
         Flowables.combineLatest(
-            //FirebaseDb.addManga2(mangaModel, count),
-            Flowable.just<List<EpisodeWatched>>(emptyList()),//fromIterable(emptyList<EpisodeWatched>()),
+            episodesListener.getAllEpisodesByShow(episode.toShowModel()),
             dao.getWatchedEpisodesById(episode.source.url).subscribeOn(Schedulers.io())
-        ) { f, d -> (f + d).distinctBy { it.showUrl } }
+        ) { f, d -> (f + d).distinctBy { it.url } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { it.filter { m -> m.showUrl == episode.source.url } }
-            .distinct { it }
+            //.distinct { it }
             .subscribe { adapter.update(it) { c, m -> c.url == m.url } }
             .addTo(disposable)
 
@@ -272,7 +270,7 @@ class ShowInfoFragment : Fragment() {
                     showUrl?.let { EpisodeWatched(url = episodeInfo.url, name = episodeInfo.name, showUrl = it) }
                         ?.let {
                             Completable.mergeArray(
-                                //if (isChecked) FirebaseDb.addChapter(it) else FirebaseDb.removeChapter(it),
+                                if (b) FirebaseDb.insertEpisodeWatched(it) else FirebaseDb.removeEpisodeWatched(it),
                                 if (b) dao.insertEpisode(it) else dao.deleteEpisode(it)
                             )
                         }
@@ -345,6 +343,8 @@ class ShowInfoFragment : Fragment() {
 
     override fun onDestroy() {
         disposable.dispose()
+        showListener.unregister()
+        episodesListener.unregister()
         super.onDestroy()
     }
 

@@ -57,6 +57,7 @@
     <fragment
         android:id="@+id/showInfoFragment3"
         android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
+        tools:layout="@layout/fragment_show_info"
         android:label="ShowInfoFragment">
         <argument
             android:name="showInfo"

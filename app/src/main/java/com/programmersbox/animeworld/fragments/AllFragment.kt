@@ -35,13 +35,13 @@ import java.util.concurrent.TimeUnit
  * Use the [AllFragment] factory method to
  * create an instance of this fragment.
  */
-class AllFragment : Fragment() {
+class AllFragment : BaseFragment() {
 
     private val disposable: CompositeDisposable = CompositeDisposable()
     private val adapter: RecentAdapter by lazy { RecentAdapter() }
     private val currentList = mutableListOf<ShowInfo>()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun viewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         allAnimeList?.adapter = adapter
         allRefresh?.isRefreshing = true
@@ -85,13 +85,7 @@ class AllFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_all, container, false)
-    }
+    override val layoutId: Int get() = R.layout.fragment_all
 
     inner class RecentAdapter : DragSwipeAdapter<ShowInfo, RecentHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder =

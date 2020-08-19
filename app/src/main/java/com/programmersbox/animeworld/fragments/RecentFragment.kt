@@ -31,18 +31,12 @@ import kotlinx.coroutines.launch
  * Use the [RecentFragment] factory method to
  * create an instance of this fragment.
  */
-class RecentFragment : Fragment() {
+class RecentFragment : BaseFragment() {
 
     private val disposable: CompositeDisposable = CompositeDisposable()
     private val adapter: RecentAdapter by lazy { RecentAdapter() }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        println("RESTORED!!!")
-        println(savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun viewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //navController.setGraph(R.navigation.recent_nav)
         //println(navController.graph)
@@ -75,13 +69,7 @@ class RecentFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recent, container, false)
-    }
+    override val layoutId: Int get() = R.layout.fragment_recent
 
     inner class RecentAdapter : DragSwipeAdapter<ShowInfo, RecentHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder =

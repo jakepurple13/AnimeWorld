@@ -101,7 +101,6 @@ class ViewVideosFragment : Fragment() {
                     ).show()
                     //TODO: Get deep linking working, for show info, view downloads from shortcut, view videos from shortcut
                     //TODO: Clean up VideoPlayerActivity
-                    //TODO: implement firebase
                     //TODO: Add favorites to recent/all items
                 }
             }

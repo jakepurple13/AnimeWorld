@@ -16,6 +16,7 @@ import com.programmersbox.anime_sources.Episode
 import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
+import com.programmersbox.animeworld.firebase.FirebaseDb
 import com.programmersbox.gsonutils.toJson
 import com.programmersbox.helpfulutils.GroupBehavior
 import com.programmersbox.helpfulutils.NotificationDslBuilder
@@ -48,7 +49,11 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : RxWorker(
         Loged.f("Starting check here")
         return Single.create<List<ShowDbModel>> { emitter ->
             Loged.f("Start")
-            val list = dao.getAllShowSync()//applicationContext.dbAndFireMangaSync3(dao)
+            val list = listOf(
+                dao.getAllShowSync(),
+                FirebaseDb.getAllShows().requireNoNulls()
+            ).flatten().groupBy(ShowDbModel::showUrl).map { it.value.maxByOrNull(ShowDbModel::numEpisodes)!! }
+            //applicationContext.dbAndFireMangaSync3(dao)
             /*val sourceList = Sources.getUpdateSearches()
                 .filter { s -> list.any { m -> m.source == s } }
                 .flatMap { m -> m.getManga() }*/
@@ -122,7 +127,7 @@ class UpdateNotification(private val context: Context) {
             val show = it.second
             show.numEpisodes = it.first.episodes.size
             dao.updateShowById(show).subscribe()
-            //FirebaseDb.updateManga2(manga).subscribe()
+            FirebaseDb.updateShow(show).subscribe()
         }
     }
 

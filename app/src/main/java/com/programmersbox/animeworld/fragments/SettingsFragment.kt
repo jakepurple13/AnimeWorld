@@ -1,5 +1,6 @@
 package com.programmersbox.animeworld.fragments
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,14 +15,13 @@ import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseUser
+import com.obsez.android.lib.filechooser.ChooserDialog
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.AnimeWorldApp
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.firebase.FirebaseAuthentication
-import com.programmersbox.animeworld.utils.UpdateWorker
-import com.programmersbox.animeworld.utils.currentSource
-import com.programmersbox.animeworld.utils.sourcePublish
-import com.programmersbox.animeworld.utils.updateCheck
+import com.programmersbox.animeworld.utils.*
+import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
 import com.programmersbox.rxutils.invoke
 import com.programmersbox.thirdpartyutils.into
@@ -39,7 +39,31 @@ class SettingsFragment : PreferenceFragmentCompat() {
         FirebaseAuthentication.authenticate(requireContext())
 
         findPreference<Preference>("folder_storage")?.let { p ->
-
+            p.summary = requireContext().folderLocation
+            p.setOnPreferenceClickListener {
+                requireActivity().requestPermissions(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                ) {
+                    if (it.isGranted) {
+                        ChooserDialog(requireActivity())
+                            .withIcon(R.mipmap.round_logo)
+                            .withStringResources("Choose a Directory", "CHOOSE", "CANCEL")
+                            .withFilter(true, false)
+                            .withStartFile(requireContext().folderLocation)
+                            .enableOptions(true)
+                            .withChosenListener { dir, _ ->
+                                requireContext().folderLocation = "$dir/"
+                                println(dir)
+                                p.summary = requireContext().folderLocation
+                            }
+                            .build()
+                            .show()
+                    }
+                }
+                //requireContext().folderLocation
+                true
+            }
         }
 
         findPreference<Preference>("user_account")?.let { p ->

@@ -32,7 +32,7 @@ import io.reactivex.subjects.BehaviorSubject
 var Context.currentSource: Sources by sharedPrefNotNullObjectDelegate(Sources.values().random())
 
 var Context.folderLocation: String by sharedPrefNotNullDelegate(
-    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString() + "/Fun/" //TODO: Change to AnimeWorld
+    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString() + "/AnimeWorld/"
 )
 
 var Context.updateCheck: Boolean by sharedPrefNotNullDelegate(true)
