@@ -87,9 +87,7 @@ class RecentFragment : BaseFragment() {
             )*/
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                val f = RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson())
-                println(f)
-                binding.root.findNavController().navigate(f)
+                binding.root.findNavController().navigate(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
             }
             binding.executePendingBindings()
         }

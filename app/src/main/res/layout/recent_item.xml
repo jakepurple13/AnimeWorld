@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -17,6 +18,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:visibility="gone"
+                android:id="@+id/favoriteHeart"
+                app:lottie_rawRes="@raw/heart"
+                app:tint="#ffffff"
+                android:layout_marginHorizontal="5dp"
+                android:layout_width="50dp"
+                android:layout_height="match_parent" />
 
             <TextView
                 style="@style/TextAppearance.MaterialComponents.Headline4"

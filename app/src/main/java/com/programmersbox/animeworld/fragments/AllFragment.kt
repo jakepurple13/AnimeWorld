@@ -27,6 +27,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_all.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -60,7 +61,15 @@ class AllFragment : BaseFragment() {
             .map { requireContext().currentSource.searchList(it, currentList) }
             .subscribe {
                 adapter.setData(it)
-                activity?.runOnUiThread { search_layout.suffixText = "${it.size}" }
+                activity?.runOnUiThread {
+                    GlobalScope.launch {
+                        activity?.runOnUiThread { allAnimeList?.smoothScrollToPosition(0) }
+                        delay(500)
+                        activity?.runOnUiThread { allAnimeList?.scrollToPosition(0) }
+                    }
+                    //allAnimeList?.scrollToPosition(0)
+                    search_layout?.suffixText = "${it.size}"
+                }
             }
             .addTo(disposable)
     }

@@ -277,8 +277,10 @@ object FirebaseDb {
 
         fun findShowByUrl(url: String?) = PublishSubject.create<Boolean> { emitter ->
             require(listener == null)
-            listener = showDoc2?.whereEqualTo("showUrl", url?.urlToPath())?.addSnapshotListener { value, error ->
-                value?.toObjects<FirebaseShowDbModel>()?.map { it.toShowDbModel() }?.let { emitter.onNext(it.isNotEmpty()) }
+            listener = showDoc2?.whereEqualTo("showUrl", url)?.addSnapshotListener { value, error ->
+                value?.toObjects<FirebaseShowDbModel>()
+                    .also { println(it) }
+                    ?.map { it.toShowDbModel() }?.let { emitter.onNext(it.isNotEmpty()) }
             }
             if (listener == null) emitter.onNext(false)
         }.toLatestFlowable()

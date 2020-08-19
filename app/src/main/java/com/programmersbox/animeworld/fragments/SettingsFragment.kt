@@ -119,54 +119,56 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        findPreference<Preference>("start_check")?.setOnPreferenceClickListener {
-            WorkManager.getInstance(requireContext()).enqueueUniqueWork(
-                "updateChecks",
-                ExistingWorkPolicy.KEEP,
-                OneTimeWorkRequestBuilder<UpdateWorker>()
-                    .setConstraints(
-                        Constraints.Builder()
-                            .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
-                            .setRequiresBatteryNotLow(false)
-                            .setRequiresCharging(false)
-                            .setRequiresDeviceIdle(false)
-                            .setRequiresStorageNotLow(false)
-                            .build()
-                    )
-                    .setInitialDelay(10, TimeUnit.SECONDS)
-                    .build()
-            )
-            true
-        }
-
-        findPreference<Preference>("current_source")?.let { p ->
-            //it.entries = Sources.values().map { it.name }.toTypedArray()
-            //it.value = requireContext().currentSource.name
+        findPreference<Preference>("start_check")?.let { p ->
             p.setOnPreferenceClickListener {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Choose a source")
-                    .setEnumSingleChoiceItems(
-                        Sources.values().map { it.name }.toTypedArray(),
-                        requireContext().currentSource
-                    ) { i, d ->
-                        sourcePublish(i)
-                        d.dismiss()
-                    }
-                    .show()
+                WorkManager.getInstance(requireContext()).enqueueUniqueWork(
+                    "updateChecking",
+                    ExistingWorkPolicy.KEEP,
+                    OneTimeWorkRequestBuilder<UpdateWorker>()
+                        .setConstraints(
+                            Constraints.Builder()
+                                .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                                .setRequiresBatteryNotLow(false)
+                                .setRequiresCharging(false)
+                                .setRequiresDeviceIdle(false)
+                                .setRequiresStorageNotLow(false)
+                                .build()
+                        )
+                        .setInitialDelay(10, TimeUnit.SECONDS)
+                        .build()
+                )
                 true
             }
-            sourcePublish.subscribe { p.title = "Current Source: ${it.name}" }
-                .addTo(disposable)
-        }
 
-        findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
-            s.setDefaultValue(requireContext().updateCheck)
-            s.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) {
-                    requireContext().updateCheck = newValue
-                    AnimeWorldApp.setupUpdate(requireContext(), newValue)
+            findPreference<Preference>("current_source")?.let { p ->
+                //it.entries = Sources.values().map { it.name }.toTypedArray()
+                //it.value = requireContext().currentSource.name
+                p.setOnPreferenceClickListener {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Choose a source")
+                        .setEnumSingleChoiceItems(
+                            Sources.values().map { it.name }.toTypedArray(),
+                            requireContext().currentSource
+                        ) { i, d ->
+                            sourcePublish(i)
+                            d.dismiss()
+                        }
+                        .show()
+                    true
                 }
-                true
+                sourcePublish.subscribe { p.title = "Current Source: ${it.name}" }
+                    .addTo(disposable)
+            }
+
+            findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
+                s.setDefaultValue(requireContext().updateCheck)
+                s.setOnPreferenceChangeListener { _, newValue ->
+                    if (newValue is Boolean) {
+                        requireContext().updateCheck = newValue
+                        AnimeWorldApp.setupUpdate(requireContext(), newValue)
+                    }
+                    true
+                }
             }
         }
     }
