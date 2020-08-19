@@ -1,5 +1,6 @@
 package com.programmersbox.animeworld.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -35,6 +38,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 /**
  * A simple [Fragment] subclass.
@@ -92,7 +96,7 @@ class FavoritesFragment : BaseFragment() {
     }
 
     private fun uiSetup() {
-
+        favRv.layoutManager = AutoFitGridLayoutManager(requireContext(), 360).apply { orientation = GridLayoutManager.VERTICAL }
         favRv.adapter = adapter
         favRv.setItemViewCacheSize(20)
         favRv.setHasFixedSize(true)
@@ -177,4 +181,33 @@ class FavoritesFragment : BaseFragment() {
         super.onDestroy()
     }
 
+}
+
+class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {
+    private var columnWidth = 0
+    private var columnWidthChanged = true
+    private fun setColumnWidth(newColumnWidth: Int) {
+        if (newColumnWidth > 0 && newColumnWidth != columnWidth) {
+            columnWidth = newColumnWidth
+            columnWidthChanged = true
+        }
+    }
+
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        if (columnWidthChanged && columnWidth > 0) {
+            val totalSpace: Int = if (orientation == LinearLayoutManager.VERTICAL) {
+                width - paddingRight - paddingLeft
+            } else {
+                height - paddingTop - paddingBottom
+            }
+            val spanCount = max(1, totalSpace / columnWidth)
+            setSpanCount(spanCount)
+            columnWidthChanged = false
+        }
+        super.onLayoutChildren(recycler, state)
+    }
+
+    init {
+        setColumnWidth(columnWidth)
+    }
 }
