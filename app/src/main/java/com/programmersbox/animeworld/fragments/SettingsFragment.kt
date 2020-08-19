@@ -6,19 +6,28 @@ import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseUser
 import com.programmersbox.anime_sources.Sources
+import com.programmersbox.animeworld.AnimeWorldApp
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.firebase.FirebaseAuthentication
+import com.programmersbox.animeworld.utils.UpdateWorker
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
+import com.programmersbox.animeworld.utils.updateCheck
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
 import com.programmersbox.rxutils.invoke
 import com.programmersbox.thirdpartyutils.into
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import java.util.concurrent.TimeUnit
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -80,6 +89,32 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        findPreference<Preference>("view_favorites")?.setOnPreferenceClickListener {
+            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
+            findNavController().navigate(R.id.action_settingsFragment_to_favoritesFragment)
+            true
+        }
+
+        findPreference<Preference>("start_check")?.setOnPreferenceClickListener {
+            WorkManager.getInstance(requireContext()).enqueueUniqueWork(
+                "updateChecks",
+                ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequestBuilder<UpdateWorker>()
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                            .setRequiresBatteryNotLow(false)
+                            .setRequiresCharging(false)
+                            .setRequiresDeviceIdle(false)
+                            .setRequiresStorageNotLow(false)
+                            .build()
+                    )
+                    .setInitialDelay(10, TimeUnit.SECONDS)
+                    .build()
+            )
+            true
+        }
+
         findPreference<Preference>("current_source")?.let { p ->
             //it.entries = Sources.values().map { it.name }.toTypedArray()
             //it.value = requireContext().currentSource.name
@@ -98,6 +133,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             sourcePublish.subscribe { p.title = "Current Source: ${it.name}" }
                 .addTo(disposable)
+        }
+
+        findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
+            s.setDefaultValue(requireContext().updateCheck)
+            s.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    requireContext().updateCheck = newValue
+                    AnimeWorldApp.setupUpdate(requireContext(), newValue)
+                }
+                true
+            }
         }
     }
 

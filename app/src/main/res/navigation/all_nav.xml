@@ -17,8 +17,8 @@
     <fragment
         android:id="@+id/showInfoFragment2"
         android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
-        tools:layout="@layout/fragment_show_info"
-        android:label="ShowInfoFragment">
+        android:label="ShowInfoFragment"
+        tools:layout="@layout/fragment_show_info">
         <argument
             android:name="showInfo"
             android:defaultValue="null"
@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
             app:destination="@id/downloadViewerActivity2" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="https://www.gogoanime1.com/watch/{url}" />
     </fragment>
     <activity
         android:id="@+id/downloadViewerActivity2"

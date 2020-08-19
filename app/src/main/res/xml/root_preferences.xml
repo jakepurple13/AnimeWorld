@@ -4,8 +4,8 @@
     <PreferenceCategory app:title="Account">
 
         <Preference
-            app:key="user_account"
             app:icon="@mipmap/big_logo"
+            app:key="user_account"
             app:title="User" />
 
     </PreferenceCategory>
@@ -23,14 +23,19 @@
             app:title="Videos" />
 
         <Preference
+            app:icon="@drawable/ic_baseline_star_24"
+            app:key="view_favorites"
+            app:title="Favorites" />
+
+        <Preference
             app:icon="@android:drawable/ic_menu_preferences"
             app:key="current_source"
             app:title="Current Source: " />
 
         <Preference
-            app:title="Storage Location"
             app:icon="@drawable/ic_baseline_folder_24"
-            app:key="folder_storage" />
+            app:key="folder_storage"
+            app:title="Storage Location" />
 
         <!--<ListPreference
             app:defaultValue="reply"
@@ -54,6 +59,10 @@
             app:summaryOff="@string/attachment_summary_off"
             app:summaryOn="@string/attachment_summary_on"
             app:title="@string/attachment_title" />
+
+        <Preference
+            app:key="start_check"
+            app:title="Check for Updates" />
 
     </PreferenceCategory>
 

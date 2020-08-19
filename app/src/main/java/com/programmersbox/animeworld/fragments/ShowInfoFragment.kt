@@ -1,6 +1,7 @@
 package com.programmersbox.animeworld.fragments
 
 import android.Manifest
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -117,6 +118,7 @@ class ShowInfoFragment : Fragment() {
                     activity?.actionBar?.title = it.name
                     adapter.showUrl = it.source.url
                     showSetup(it)
+                    shareButton.setOnClickListener { _ -> shareShow(it) }
                 }?.addTo(disposable)
         }
 
@@ -124,13 +126,13 @@ class ShowInfoFragment : Fragment() {
 
     }
 
-    /*fun shareManga(manga: MangaInfoModel?) {
+    private fun shareShow(episode: Episode) {
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, manga?.mangaUrl)
-            putExtra(Intent.EXTRA_TITLE, manga?.title)
-        }, "Share ${manga?.title}"))
-    }*/
+            putExtra(Intent.EXTRA_TEXT, episode.source.url)
+            putExtra(Intent.EXTRA_TITLE, episode.name)
+        }, "Share ${episode.name}"))
+    }
 
     private fun showSetup(episode: Episode) {
         favoriteshow.setOnClickListener {

@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_viewVideosFragment"
             app:destination="@id/viewVideosFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
     <activity
         android:id="@+id/downloadViewerActivity3"
@@ -42,4 +45,30 @@
             android:name="show_name"
             app:argType="string" />
     </activity>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.programmersbox.animeworld.fragments.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_showInfoFragment3"
+            app:destination="@id/showInfoFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/showInfoFragment3"
+        android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
+        android:label="ShowInfoFragment">
+        <argument
+            android:name="showInfo"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
+            app:destination="@id/downloadViewerActivity3" />
+        <action
+            android:id="@+id/action_showInfoFragment3_pop"
+            app:popUpTo="@id/showInfoFragment3"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

@@ -3,6 +3,19 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <plurals name="numFavorites">
+        <item quantity="one">Search %d Favorite</item>
+        <item quantity="other">Search %d Favorites</item>
+    </plurals>
+
+    <plurals name="updateAmount">
+        <item quantity="one">There is %d update</item>
+        <item quantity="other">There are %d updates</item>
+    </plurals>
+
+    <string name="updateNumber">There are %d update(s)</string>
+    <string name="hadAnUpdate">%s had an update. %s</string>
+
     <string name="pause">PAUSE</string>
     <string name="resume">RESUME</string>
     <string name="download">Download</string>

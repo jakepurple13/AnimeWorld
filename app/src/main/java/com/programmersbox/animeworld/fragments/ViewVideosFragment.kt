@@ -64,7 +64,6 @@ class ViewVideosFragment : Fragment() {
                     val listener: DeleteDialog.DeleteDialogListener = object : DeleteDialog.DeleteDialogListener {
                         override fun onDelete() {
                             val file = dragSwipeAdapter.removeItem(viewHolder.adapterPosition)
-                            file
                             if (file.exists()) {
                                 Toast.makeText(requireContext(), if (file.delete()) "File Deleted" else "File Not Deleted", Toast.LENGTH_SHORT).show()
                             }
@@ -81,10 +80,11 @@ class ViewVideosFragment : Fragment() {
                         dragSwipeAdapter.dataList[viewHolder.adapterPosition],
                         listener
                     ).show()
-                    //TODO: Get this working
-                    //TODO: Get playing video working
                     //TODO: Get deep linking working, for show info, view downloads from shortcut, view videos from shortcut
-                    //TODO: Change download viewer into a fragment
+                    //TODO: Clean up VideoPlayerActivity
+                    //TODO: get delete videos working
+                    //TODO: implement firebase
+                    //TODO: implement update check
                 }
             }
         )
@@ -193,7 +193,7 @@ class ViewVideosFragment : Fragment() {
 
             Glide.with(context)
                 .load(item)
-                .override(480, 360)
+                .override(360, 270)
                 .thumbnail(0.5f)
                 .transform(RoundedCorners(15))
                 .into(itemView.video_thumbnail)

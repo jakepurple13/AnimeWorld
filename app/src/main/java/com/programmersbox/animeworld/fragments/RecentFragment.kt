@@ -39,6 +39,7 @@ class RecentFragment : Fragment() {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         println("RESTORED!!!")
+        println(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,6 +47,7 @@ class RecentFragment : Fragment() {
         //navController.setGraph(R.navigation.recent_nav)
         //println(navController.graph)
         println("CREATED!!!")
+        println(savedInstanceState)
         recentAnimeList?.adapter = adapter
         recentRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
