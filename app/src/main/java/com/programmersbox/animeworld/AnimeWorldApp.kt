@@ -3,22 +3,42 @@ package com.programmersbox.animeworld
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import androidx.core.content.FileProvider
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
+import com.facebook.stetho.Stetho
 import com.programmersbox.animeworld.utils.CustomFetchNotificationManager
+import com.programmersbox.animeworld.utils.UpdateWorker
+import com.programmersbox.animeworld.utils.updateCheck
+import com.programmersbox.helpfulutils.NotificationChannelImportance
+import com.programmersbox.helpfulutils.createNotificationChannel
+import com.programmersbox.helpfulutils.createNotificationGroup
 import com.programmersbox.loggingutils.Loged
-import com.tonyodev.fetch2.*
 import com.tonyodev.fetch2.Fetch.Impl.setDefaultInstanceConfiguration
+import com.tonyodev.fetch2.FetchConfiguration
+import com.tonyodev.fetch2.HttpUrlConnectionDownloader
+import com.tonyodev.fetch2.NetworkType
 import com.tonyodev.fetch2core.Downloader
 import com.tonyodev.fetch2core.Downloader.FileDownloaderType
-import com.tonyodev.fetch2rx.RxFetch
 import java.net.HttpURLConnection
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 
 class AnimeWorldApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Stetho.initializeWithDefaults(this)
         Loged.FILTER_BY_PACKAGE_NAME = "programmersbox"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel("showChannel", importance = NotificationChannelImportance.HIGH)
+            createNotificationGroup("showGroup")
+            createNotificationChannel("updateCheckChannel", importance = NotificationChannelImportance.MIN)
+            createNotificationChannel("appUpdate", importance = NotificationChannelImportance.HIGH)
+        }
         val fetchConfiguration = FetchConfiguration.Builder(this)
             .enableAutoStart(true)
             .enableRetryOnNetworkGain(true)
@@ -36,6 +56,40 @@ class AnimeWorldApp : Application() {
             .subscribe {
                 println(it)
             }*/
+
+        setupUpdate(this, updateCheck)
+
+    }
+
+    companion object {
+        fun setupUpdate(context: Context, shouldCheck: Boolean) {
+            try {
+
+                val work = WorkManager.getInstance(context)
+                //work.cancelAllWork()
+                if (shouldCheck) {
+                    work.enqueueUniquePeriodicWork(
+                        "updateChecks",
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        PeriodicWorkRequest.Builder(UpdateWorker::class.java, 1, TimeUnit.HOURS)
+                            //PeriodicWorkRequest.Builder(UpdateWorker::class.java, 15, TimeUnit.MINUTES)
+                            .setConstraints(
+                                Constraints.Builder()
+                                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                                    .setRequiresBatteryNotLow(false)
+                                    .setRequiresCharging(false)
+                                    .setRequiresDeviceIdle(false)
+                                    .setRequiresStorageNotLow(false)
+                                    .build()
+                            )
+                            .setInitialDelay(10, TimeUnit.SECONDS)
+                            .build()
+                    ).state.observeForever { println(it) }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
 }

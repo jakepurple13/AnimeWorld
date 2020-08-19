@@ -1,16 +1,41 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/messages_header">
+
+    <PreferenceCategory app:title="Account">
 
         <Preference
-            app:key="view_downloads"
+            app:icon="@mipmap/big_logo"
+            app:key="user_account"
+            app:title="User" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="General">
+
+        <Preference
             app:icon="@android:drawable/stat_sys_download"
+            app:key="view_downloads"
             app:title="Downloads" />
 
         <Preference
+            app:icon="@drawable/ic_baseline_video_library_24"
+            app:key="view_videos"
+            app:title="Videos" />
+
+        <Preference
+            app:icon="@drawable/ic_baseline_star_24"
+            app:key="view_favorites"
+            app:title="Favorites" />
+
+        <Preference
             app:icon="@android:drawable/ic_menu_preferences"
-            app:title="Current Source: "
-            app:key="current_source" />
+            app:key="current_source"
+            app:title="Current Source: " />
+
+        <Preference
+            app:icon="@drawable/ic_baseline_folder_24"
+            app:key="folder_storage"
+            app:title="Storage Location" />
 
         <!--<ListPreference
             app:defaultValue="reply"
@@ -26,7 +51,7 @@
 
         <SwitchPreferenceCompat
             app:key="sync"
-            app:title="@string/sync_title" />
+            app:title="Check for Updates Periodically" />
 
         <SwitchPreferenceCompat
             app:dependency="sync"
@@ -34,6 +59,10 @@
             app:summaryOff="@string/attachment_summary_off"
             app:summaryOn="@string/attachment_summary_on"
             app:title="@string/attachment_title" />
+
+        <Preference
+            app:key="start_check"
+            app:title="Check for Updates" />
 
     </PreferenceCategory>
 

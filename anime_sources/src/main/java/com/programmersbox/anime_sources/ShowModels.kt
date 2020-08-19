@@ -1,6 +1,6 @@
 package com.programmersbox.anime_sources
 
-data class ShowInfo(val name: String, val url: String, internal val sources: ShowApiService) {
+data class ShowInfo(val name: String, val url: String, val sources: Sources) {
     fun getEpisodeInfo() = sources.getEpisodeInfo(this)
 }
 
@@ -13,7 +13,7 @@ data class Episode(
     val episodes: List<EpisodeInfo>
 )
 
-class EpisodeInfo(val name: String, val url: String, private val sources: ShowApiService) {
+class EpisodeInfo(val name: String, val url: String, private val sources: Sources) {
     fun getVideoLink() = sources.getVideoLink(this)
     override fun toString(): String = "EpisodeInfo(name=$name, url=$url)"
 }

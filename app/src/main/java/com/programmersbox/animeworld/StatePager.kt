@@ -2,10 +2,11 @@ package com.programmersbox.animeworld
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
 
-class StatePager(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT), MutableList<Fragment> by mutableListOf() {
+class StatePager(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT), MutableList<Fragment> by mutableListOf() {
     //private val mFragmentList = mutableListOf<Fragment>()
 
     //operator fun Fragment.unaryPlus() = addFragment(this)

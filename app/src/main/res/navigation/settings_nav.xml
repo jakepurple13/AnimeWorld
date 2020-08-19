@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_nav"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.programmersbox.animeworld.fragments.SettingsFragment"
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_settingsFragment2_to_downloadViewerActivity3"
+            app:destination="@id/downloadViewerActivity3" />
+        <action
+            android:id="@+id/action_settingsFragment_to_viewVideosFragment"
+            app:destination="@id/viewVideosFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/downloadViewerActivity3"
+        android:name="com.programmersbox.animeworld.DownloadViewerActivity"
+        android:label="activity_download_viewer"
+        tools:layout="@layout/activity_download_viewer" />
+    <fragment
+        android:id="@+id/viewVideosFragment"
+        android:name="com.programmersbox.animeworld.fragments.ViewVideosFragment"
+        android:label="fragment_view_videos"
+        tools:layout="@layout/fragment_view_videos">
+        <action
+            android:id="@+id/action_viewVideosFragment_to_videoPlayerActivity"
+            app:destination="@id/videoPlayerActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/videoPlayerActivity"
+        android:name="com.programmersbox.animeworld.VideoPlayerActivity"
+        android:label="activity_video_player"
+        tools:layout="@layout/activity_video_player">
+        <argument
+            android:name="show_path"
+            app:argType="string" />
+        <argument
+            android:name="show_name"
+            app:argType="string" />
+    </activity>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.programmersbox.animeworld.fragments.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_showInfoFragment3"
+            app:destination="@id/showInfoFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/showInfoFragment3"
+        android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
+        android:label="ShowInfoFragment">
+        <argument
+            android:name="showInfo"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
+            app:destination="@id/downloadViewerActivity3" />
+        <action
+            android:id="@+id/action_showInfoFragment3_pop"
+            app:popUpTo="@id/showInfoFragment3"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

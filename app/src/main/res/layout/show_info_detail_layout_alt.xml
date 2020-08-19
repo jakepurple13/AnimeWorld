@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/showInfoLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="5dp"
+    app:layout_constraintBottom_toTopOf="@id/optionsBar"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+        android:id="@+id/showInfoCover"
+        android:layout_width="360px"
+        android:layout_height="480px"
+        android:layout_margin="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription,PxUsage"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/showInfoTitle"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:freezesText="true"
+        android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:text="@{show.name}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/showInfoCover"
+        app:layout_constraintTop_toTopOf="@id/showInfoCover"
+        tools:text="@tools:sample/full_names" />
+
+    <TextView
+        android:id="@+id/showUrl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:text="@{show.source.url}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/showInfoCover"
+        app:layout_constraintTop_toBottomOf="@id/showInfoTitle"
+        tools:text="@tools:sample/cities" />
+
+    <ScrollView
+        android:id="@+id/descriptionLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/showInfoCover"
+        app:layout_constraintTop_toBottomOf="@id/showUrl">
+
+        <TextView
+            android:id="@+id/showInfoDescription"
+            style="@style/TextAppearance.MaterialComponents.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{show.description}"
+            tools:text="@tools:sample/lorem/random" />
+
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/genreLists"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/descriptionLayout"
+        app:layout_constraintEnd_toEndOf="@id/showInfoCover"
+        app:layout_constraintStart_toStartOf="@id/showInfoCover"
+        app:layout_constraintTop_toBottomOf="@id/showInfoCover">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/genreList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:text="Comedy"
+                tools:visibility="visible" />
+
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:text="Comedy"
+                tools:visibility="visible" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

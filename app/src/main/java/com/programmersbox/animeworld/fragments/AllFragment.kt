@@ -5,16 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
-import com.programmersbox.animeworld.adapters.RecentAdapter
+import com.programmersbox.animeworld.databinding.RecentItemBinding
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
 import com.programmersbox.dragswipe.DragSwipeAdapter
 import com.programmersbox.dragswipe.DragSwipeDiffUtil
+import com.programmersbox.gsonutils.toJson
+import com.programmersbox.helpfulutils.layoutInflater
 import com.programmersbox.helpfulutils.runOnUIThread
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -31,22 +35,23 @@ import java.util.concurrent.TimeUnit
  * Use the [AllFragment] factory method to
  * create an instance of this fragment.
  */
-class AllFragment(private val disposable: CompositeDisposable) : Fragment() {
+class AllFragment : Fragment() {
 
-    private val adapter: RecentAdapter by lazy { RecentAdapter(this, disposable) }
+    private val disposable: CompositeDisposable = CompositeDisposable()
+    private val adapter: RecentAdapter by lazy { RecentAdapter() }
     private val currentList = mutableListOf<ShowInfo>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        allAnimeList.adapter = adapter
-        allRefresh.isRefreshing = true
+        allAnimeList?.adapter = adapter
+        allRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
         sourcePublish
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { sourceLoad(it) }
             .addTo(disposable)
-        allRefresh.setOnRefreshListener { context?.currentSource?.let { sourceLoad(it) } }
+        allRefresh?.setOnRefreshListener { context?.currentSource?.let { sourceLoad(it) } }
         search_info
             .textChanges()
             .subscribeOn(Schedulers.io())
@@ -70,10 +75,10 @@ class AllFragment(private val disposable: CompositeDisposable) : Fragment() {
                     adapter.setListNotify(it)
                     currentList.clear()
                     currentList.addAll(it)
-                    allRefresh.isRefreshing = false
+                    allRefresh?.isRefreshing = false
                     activity?.runOnUiThread {
-                        search_layout.suffixText = "${it.size}"
-                        search_layout.hint = "Search: ${requireContext().currentSource.name}"
+                        search_layout?.suffixText = "${it.size}"
+                        search_layout?.hint = "Search: ${requireContext().currentSource.name}"
                     }
                 }
                 .addTo(disposable)
@@ -86,6 +91,31 @@ class AllFragment(private val disposable: CompositeDisposable) : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_all, container, false)
+    }
+
+    inner class RecentAdapter : DragSwipeAdapter<ShowInfo, RecentHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentHolder =
+            RecentHolder(RecentItemBinding.inflate(requireContext().layoutInflater, parent, false))
+
+        override fun RecentHolder.onBind(item: ShowInfo, position: Int) = bind(item)
+    }
+
+    class RecentHolder(private val binding: RecentItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(info: ShowInfo) {
+            binding.show = info
+            /*binding.root.setOnClickListener(
+                Navigation.createNavigateOnClickListener(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
+            )*/
+            binding.root.setOnClickListener {
+                //println(navController.currentDestination)
+                val f = AllFragmentDirections.actionAllFragment2ToShowInfoFragment2(info.toJson())
+                println(f)
+                binding.root.findNavController().navigate(f)
+            }
+            binding.executePendingBindings()
+        }
+
     }
 }
 

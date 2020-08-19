@@ -19,7 +19,7 @@ object AnimeToonApi : ShowApi(
     allPath = "cartoon",
     recentPath = "updates"
 ) {
-    private fun toShowInfo(element: Element) = ShowInfo(element.text(), element.attr("abs:href"), this)
+    private fun toShowInfo(element: Element) = ShowInfo(element.text(), element.attr("abs:href"), Sources.ANIMETOON)
 
     override fun getList(doc: Document): Single<List<ShowInfo>> = Single.create {
         try {

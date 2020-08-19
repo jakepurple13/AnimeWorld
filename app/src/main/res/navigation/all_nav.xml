@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/all_nav"
+    app:startDestination="@id/allFragment">
+
+    <fragment
+        android:id="@+id/allFragment"
+        android:name="com.programmersbox.animeworld.fragments.AllFragment"
+        android:label="AnimeWorld"
+        tools:layout="@layout/fragment_all">
+        <action
+            android:id="@+id/action_allFragment2_to_showInfoFragment2"
+            app:destination="@id/showInfoFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/showInfoFragment2"
+        android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
+        android:label="ShowInfoFragment"
+        tools:layout="@layout/fragment_show_info">
+        <argument
+            android:name="showInfo"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_showInfoFragment_pop"
+            app:popUpTo="@id/showInfoFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
+            app:destination="@id/downloadViewerActivity2" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="https://www.gogoanime1.com/watch/{url}" />
+    </fragment>
+    <activity
+        android:id="@+id/downloadViewerActivity2"
+        android:name="com.programmersbox.animeworld.DownloadViewerActivity"
+        android:label="activity_download_viewer"
+        tools:layout="@layout/activity_download_viewer" />
+</navigation>
