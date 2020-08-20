@@ -164,16 +164,6 @@ class ShowInfoFragment : Fragment() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { isFavorite(true) }
                     .addTo(disposable)
-                /*FirebaseDb.addManga2(mangaModel, count)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { isFavorite(true) }
-                    .addTo(disposable)
-                dao.insertManga(mangaModel.toMangaDbModel(count))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { isFavorite(true) }
-                    .addTo(disposable)*/
             }
 
             fun removeShow(show: Episode) {

@@ -20,7 +20,6 @@
             android:layout_height="wrap_content">
 
             <com.airbnb.lottie.LottieAnimationView
-                android:visibility="gone"
                 android:id="@+id/favoriteHeart"
                 app:lottie_rawRes="@raw/heart"
                 app:tint="#ffffff"
