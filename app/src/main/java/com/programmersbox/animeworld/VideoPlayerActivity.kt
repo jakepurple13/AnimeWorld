@@ -144,7 +144,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         playerView.player = player
 
         //download
-        if (downloadOrStream) {
+        if (args.downloadOrStream) {
             val dataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, "AnimeWorld"))
             val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(args.showPath.toUri())
             player.prepare(videoSource)
@@ -240,7 +240,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         //mpw_video_player.pauseVideo()
         try {
             playerView.player!!.playWhenReady = false
-            playerView.player.release()
+            playerView.player!!.release()
         } catch (e: IllegalStateException) {
 
         }
@@ -328,10 +328,10 @@ class VideoPlayerActivity : AppCompatActivity() {
                             if (absDeltaX >= THRESHOLD) { // adjust progress
                                 //if (mCurrentState != CURRENT_STATE_ERROR) {
                                 mChangePosition = true
-                                mDownPosition = playerView.player.currentPosition.toInt()//getCurrentPositionWhenPlaying()
+                                mDownPosition = playerView.player!!.currentPosition.toInt()//getCurrentPositionWhenPlaying()
                                 //}
                             } else {
-                                if (x <= playerView.videoSurfaceView.width / 2) {  // adjust the volume
+                                if (x <= playerView.videoSurfaceView!!.width / 2) {  // adjust the volume
                                     mChangeVolume = true
                                     mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
                                 } else {  // adjust the light
@@ -342,7 +342,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                         }
                     }
                     if (mChangePosition) {
-                        val totalTimeDuration = playerView.player.duration//getDuration()
+                        val totalTimeDuration = playerView.player!!.duration//getDuration()
                         mSeekTimePosition = (mDownPosition + deltaX * 100).toInt()
                         if (mSeekTimePosition > totalTimeDuration) {
                             mSeekTimePosition = totalTimeDuration.toInt()
@@ -379,7 +379,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                         //onActionEvent(MxUserAction.ON_TOUCH_SCREEN_SEEK_POSITION)
                         //val duration = playerView.player.duration
                         //val progress = mSeekTimePosition * 100 / if (duration == 0L) 1 else duration
-                        playerView.player.seekTo(mSeekTimePosition.toLong())
+                        playerView.player!!.seekTo(mSeekTimePosition.toLong())
                         //mProgressBar.setProgress(progress)
                     }
                     if (mChangeVolume) {
@@ -441,7 +441,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         if (!mProgressDialog!!.isShowing) {
             mProgressDialog!!.show()
         }
-        val seekedTime = abs(playerView.player.currentPosition - seekTimePosition)
+        val seekedTime = abs(playerView.player!!.currentPosition - seekTimePosition)
         val seekTimeText = "(" + stringForTime(seekedTime) + ") " + seekTime
         mDialogSeekTime!!.text = seekTimeText
         mDialogTotalTime!!.text = String.format(" / %s", totalTime)

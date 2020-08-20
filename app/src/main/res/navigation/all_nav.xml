@@ -21,9 +21,9 @@
         tools:layout="@layout/fragment_show_info">
         <argument
             android:name="showInfo"
-            android:defaultValue="null"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_showInfoFragment_pop"
             app:popUpTo="@id/showInfoFragment"
@@ -31,9 +31,8 @@
         <action
             android:id="@+id/action_showInfoFragment_to_downloadViewerActivity"
             app:destination="@id/downloadViewerActivity2" />
-        <deepLink
-            android:id="@+id/deepLink"
-            app:uri="https://www.gogoanime1.com/watch/{url}" />
+        <deepLink app:uri="www.gogoanime1.com/watch/{url}" />
+        <deepLink app:uri="www.animetoon.org/{url}" />
         <action
             android:id="@+id/action_showInfoFragment2_to_videoPlayerActivity2"
             app:destination="@id/videoPlayerActivity2" />
@@ -54,5 +53,9 @@
         <argument
             android:name="show_name"
             app:argType="string" />
+        <argument
+            android:name="downloadOrStream"
+            android:defaultValue="true"
+            app:argType="boolean" />
     </activity>
 </navigation>

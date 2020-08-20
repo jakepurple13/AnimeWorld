@@ -32,6 +32,7 @@
         <action
             android:id="@+id/action_viewVideosFragment_to_videoPlayerActivity"
             app:destination="@id/videoPlayerActivity" />
+        <deepLink app:uri="animeworld://view_videos" />
     </fragment>
     <activity
         android:id="@+id/videoPlayerActivity"
@@ -44,6 +45,10 @@
         <argument
             android:name="show_name"
             app:argType="string" />
+        <argument
+            android:name="downloadOrStream"
+            android:defaultValue="true"
+            app:argType="boolean" />
     </activity>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -57,8 +62,8 @@
     <fragment
         android:id="@+id/showInfoFragment3"
         android:name="com.programmersbox.animeworld.fragments.ShowInfoFragment"
-        tools:layout="@layout/fragment_show_info"
-        android:label="ShowInfoFragment">
+        android:label="ShowInfoFragment"
+        tools:layout="@layout/fragment_show_info">
         <argument
             android:name="showInfo"
             android:defaultValue="null"

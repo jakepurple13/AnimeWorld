@@ -25,6 +25,7 @@ import com.programmersbox.anime_db.ShowDatabase
 import com.programmersbox.anime_sources.Episode
 import com.programmersbox.anime_sources.EpisodeInfo
 import com.programmersbox.anime_sources.ShowInfo
+import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.ChapterItemBinding
 import com.programmersbox.animeworld.databinding.FragmentShowInfoBinding
@@ -40,6 +41,7 @@ import com.programmersbox.dragswipe.get
 import com.programmersbox.flowutils.collectOnUi
 import com.programmersbox.flowutils.invoke
 import com.programmersbox.gsonutils.fromJson
+import com.programmersbox.gsonutils.toJson
 import com.programmersbox.helpfulutils.Range
 import com.programmersbox.helpfulutils.animateChildren
 import com.programmersbox.helpfulutils.requestPermissions
@@ -96,6 +98,15 @@ class ShowInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        println(requireActivity().intent.data)
+        val showBuilder = requireActivity().intent.data?.let { url ->
+            Sources.getSourceByUrl(url.toString())?.let { s ->
+                ShowInfo(url.lastPathSegment.toString(), url.toString(), s)
+            }
+        }?.toJson()
+
+        println(showBuilder)
+
         viewDownloads.setOnClickListener { findNavController().navigate(R.id.action_showInfoFragment_to_downloadViewerActivity) }
 
         favoriteshow.changeTint(Color.WHITE)
@@ -114,7 +125,7 @@ class ShowInfoFragment : Fragment() {
         println(args.showInfo)
 
         GlobalScope.launch {
-            args.showInfo?.fromJson<ShowInfo>()?.getEpisodeInfo()
+            (showBuilder ?: args.showInfo)?.fromJson<ShowInfo>()?.getEpisodeInfo()
                 ?.subscribeOn(Schedulers.io())
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribeBy {
@@ -322,6 +333,7 @@ class ShowInfoFragment : Fragment() {
                 }
 
                 downloadOrStreamPublish
+                    .startWith(itemView.context.downloadOrStream)
                     .subscribe { binding.okayToDownload.text = if (it) "Download" else "Stream" }
                     .addTo(disposable)
                 binding.okayToDownload.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
@@ -360,7 +372,11 @@ class ShowInfoFragment : Fragment() {
                         link.firstOrNull()?.let {
                             findNavController()
                                 .navigate(
-                                    ShowInfoFragmentDirections.actionShowInfoFragment2ToVideoPlayerActivity2(it.link.orEmpty(), episodeInfo.name)
+                                    ShowInfoFragmentDirections.actionShowInfoFragment2ToVideoPlayerActivity2(
+                                        it.link.orEmpty(),
+                                        episodeInfo.name,
+                                        false
+                                    )
                                 )
                         }
                     }

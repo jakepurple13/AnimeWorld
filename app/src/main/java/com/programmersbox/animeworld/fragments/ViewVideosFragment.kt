@@ -99,13 +99,15 @@ class ViewVideosFragment : Fragment() {
                         dragSwipeAdapter.dataList[viewHolder.adapterPosition],
                         listener
                     ).show()
-                    //TODO: Get deep linking working, for show info, view downloads from shortcut, view videos from shortcut
+                    //TODO: Get deep linking working, view downloads from shortcut, view videos from shortcut
                     //TODO: maaaaybe do a redirect fragment?
                     //TODO: Clean up VideoPlayerActivity
                     //TODO: Add favorites to recent/all items
                     //TODO: maybe add a watch list?
                     //TODO: maybe add a watch later?
                     //TODO: make sure that episodes watched firebase is working
+                    //TODO: maybe put in live chart data?
+                    //TODO: add multi-delete to download and video viewer
                 }
             }
         )
@@ -221,7 +223,8 @@ class ViewVideosFragment : Fragment() {
                 Navigation.createNavigateOnClickListener(
                     ViewVideosFragmentDirections.actionViewVideosFragmentToVideoPlayerActivity(
                         showPath = item.absolutePath,
-                        showName = item.name
+                        showName = item.name,
+                        downloadOrStream = true,
                     )
                 )
             )

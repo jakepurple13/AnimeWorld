@@ -1,7 +1,6 @@
 package com.programmersbox.animeworld.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -16,7 +15,6 @@ import com.programmersbox.animeworld.utils.sourcePublish
 import com.programmersbox.dragswipe.DragSwipeAdapter
 import com.programmersbox.gsonutils.toJson
 import com.programmersbox.helpfulutils.layoutInflater
-import com.programmersbox.loggingutils.Loged
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -39,8 +37,6 @@ class RecentFragment : BaseFragment() {
     override fun viewCreated(view: View, savedInstanceState: Bundle?) {
         //navController.setGraph(R.navigation.recent_nav)
         //println(navController.graph)
-        println("CREATED!!!")
-        println(savedInstanceState)
         recentAnimeList?.adapter = adapter
         recentRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
@@ -55,7 +51,6 @@ class RecentFragment : BaseFragment() {
     }
 
     private fun sourceLoad(sources: Sources) {
-        Loged.a(sources)
         GlobalScope.launch {
             sources.getRecent()
                 .subscribeOn(Schedulers.io())

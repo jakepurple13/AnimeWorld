@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.programmersbox.anime_db.ShowDatabase
 import com.programmersbox.anime_db.ShowDbModel
@@ -87,9 +88,11 @@ class FavoritesFragment : BaseFragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { pair -> pair.first.sortedBy(ShowDbModel::title).filter { it.source in pair.second && it.title.contains(pair.third, true) } }
+            .map { it.size to it.toGroup() }
+            .distinctUntilChanged()
             .subscribe {
-                adapter.setData(it)
-                fav_search_layout?.hint = resources.getQuantityString(R.plurals.numFavorites, it.size, it.size)
+                adapter.setData(it.second.toList())
+                fav_search_layout?.hint = resources.getQuantityString(R.plurals.numFavorites, it.first, it.first)
                 favRv?.smoothScrollToPosition(0)
             }
             .addTo(disposable)
@@ -125,14 +128,19 @@ class FavoritesFragment : BaseFragment() {
         }
     }
 
+    private fun List<ShowDbModel>.toGroup() = groupBy(ShowDbModel::title)
+
     private fun addOrRemoveSource(isChecked: Boolean, sources: Sources) {
         sourcesList = sourcesList?.apply { if (isChecked) add(sources) else remove(sources) }
     }
 
-    private fun DragSwipeAdapter<ShowDbModel, *>.setData(newList: List<ShowDbModel>) {
-        val diffCallback = object : DragSwipeDiffUtil<ShowDbModel>(dataList, newList) {
-            override fun areContentsTheSame(oldItem: ShowDbModel, newItem: ShowDbModel): Boolean = oldItem.showUrl == newItem.showUrl
-            override fun areItemsTheSame(oldItem: ShowDbModel, newItem: ShowDbModel): Boolean = oldItem.showUrl === newItem.showUrl
+    private fun DragSwipeAdapter<Pair<String, List<ShowDbModel>>, *>.setData(newList: List<Pair<String, List<ShowDbModel>>>) {
+        val diffCallback = object : DragSwipeDiffUtil<Pair<String, List<ShowDbModel>>>(dataList, newList) {
+            override fun areContentsTheSame(oldItem: Pair<String, List<ShowDbModel>>, newItem: Pair<String, List<ShowDbModel>>): Boolean =
+                oldItem.second == newItem.second
+
+            override fun areItemsTheSame(oldItem: Pair<String, List<ShowDbModel>>, newItem: Pair<String, List<ShowDbModel>>): Boolean =
+                oldItem.second === newItem.second
         }
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         dataList.clear()
@@ -140,23 +148,23 @@ class FavoritesFragment : BaseFragment() {
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class FavoriteAdapter : DragSwipeAdapter<ShowDbModel, FavoriteHolder>() {
+    inner class FavoriteAdapter : DragSwipeAdapter<Pair<String, List<ShowDbModel>>, FavoriteHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteHolder =
             FavoriteHolder(FavoriteItemBinding.inflate(requireContext().layoutInflater, parent, false))
 
-        override fun FavoriteHolder.onBind(item: ShowDbModel, position: Int) = bind(item)
+        override fun FavoriteHolder.onBind(item: Pair<String, List<ShowDbModel>>, position: Int) = bind(item.second)
     }
 
     class FavoriteHolder(private val binding: FavoriteItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(info: ShowDbModel) {
-            binding.show = info
+        fun bind(info: List<ShowDbModel>) {
+            binding.show = info.random()
             /*binding.root.setOnClickListener(
                 Navigation.createNavigateOnClickListener(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
             )*/
             Glide.with(itemView.context)
                 .asBitmap()
-                .load(info.imageUrl)
+                .load(info.random().imageUrl)
                 //.override(360, 480)
                 .fitCenter()
                 .transform(RoundedCorners(15))
@@ -167,8 +175,19 @@ class FavoritesFragment : BaseFragment() {
 
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                binding.root.findNavController()
-                    .navigate(FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(info.toShow().toJson()))
+                if (info.size == 1) {
+                    binding.root.findNavController()
+                        .navigate(FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(info.first().toShow().toJson()))
+                } else {
+                    MaterialAlertDialogBuilder(itemView.context)
+                        .setTitle("Choose Source")
+                        .setItems(info.map { "${it.source} - ${it.title}" }.toTypedArray()) { d, i ->
+                            binding.root.findNavController()
+                                .navigate(FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(info[i].toShow().toJson()))
+                            d.dismiss()
+                        }
+                        .show()
+                }
             }
             binding.executePendingBindings()
         }

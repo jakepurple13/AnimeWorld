@@ -51,5 +51,9 @@
         <argument
             android:name="show_name"
             app:argType="string" />
+        <argument
+            android:name="downloadOrStream"
+            android:defaultValue="true"
+            app:argType="boolean" />
     </activity>
 </navigation>

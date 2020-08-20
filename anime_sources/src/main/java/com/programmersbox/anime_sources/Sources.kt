@@ -15,7 +15,7 @@ interface ShowApiService {
     fun getVideoLink(info: EpisodeInfo): Single<List<Storage>>
 }
 
-enum class Sources(protected val api: ShowApi) : ShowApiService by api {
+enum class Sources(private val api: ShowApi) : ShowApiService by api {
     GOGOANIME(GogoAnimeApi),
     ANIMETOON(AnimeToonApi), DUBBED_ANIME(AnimeToonDubbed)//, ANIMETOON_MOVIES(AnimeToonMovies), ANIMETOON_DUBBED(AnimeToonDubbed), ANIMETOON_RECENT(AnimeToonRecent)
     //PUTLOCKER(PutLocker), PUTLOCKER_RECENT(PutLockerRecent);
@@ -31,9 +31,9 @@ enum class Sources(protected val api: ShowApi) : ShowApiService by api {
 }
 
 abstract class ShowApi(
-    protected val baseUrl: String,
-    protected val allPath: String,
-    protected val recentPath: String
+    internal val baseUrl: String,
+    internal val allPath: String,
+    internal val recentPath: String
 ) : ShowApiService {
     private fun recent() = "$baseUrl/$recentPath".toJsoup()
     private fun all() = "$baseUrl/$allPath".toJsoup()

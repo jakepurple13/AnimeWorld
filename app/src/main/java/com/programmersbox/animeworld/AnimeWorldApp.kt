@@ -3,14 +3,24 @@ package com.programmersbox.animeworld
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.facebook.stetho.Stetho
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
+import com.mikepenz.iconics.utils.icon
 import com.programmersbox.animeworld.utils.CustomFetchNotificationManager
 import com.programmersbox.animeworld.utils.UpdateWorker
 import com.programmersbox.animeworld.utils.updateCheck
@@ -70,6 +80,59 @@ class AnimeWorldApp : Application() {
 
         setupUpdate(this, updateCheck)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            shortcutSetup()
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
+    private fun shortcutSetup() {
+        val manager = getSystemService(ShortcutManager::class.java)
+        if (manager.dynamicShortcuts.size == 0) {
+            // Application restored. Need to re-publish dynamic shortcuts.
+            if (manager.pinnedShortcuts.size > 0) {
+                // Pinned shortcuts have been restored. Use
+                // updateShortcuts() to make sure they contain
+                // up-to-date information.
+                manager.removeAllDynamicShortcuts()
+            }
+        }
+
+        val shortcuts = mutableListOf<ShortcutInfo>()
+
+        //download viewer
+        shortcuts.add(
+            ShortcutInfo.Builder(this, "download_viewer")
+                .setIcon(Icon.createWithBitmap(IconicsDrawable(this).icon(GoogleMaterial.Icon.gmd_video_library).toBitmap()))
+                .setShortLabel("View Videos")
+                .setLongLabel("View Videos")
+                .setIntent(Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, DownloadViewerActivity::class.java))
+                .build()
+        )
+
+        /*val viewVideos = ShortcutInfo.Builder(this, "video_viewer")
+            .setIcon(Icon.createWithBitmap(IconicsDrawable(this).icon(GoogleMaterial.Icon.gmd_video_library).toBitmap()))
+            .setShortLabel("View Videos")
+            .setLongLabel("View Videos")
+            .setIntent()
+            .build()*/
+
+        val f = NavDeepLinkBuilder(this)
+            .setGraph(R.navigation.settings_nav)
+            .setDestination(R.id.viewVideosFragment)
+
+        println(f)
+
+        /*
+        NavDeepLinkBuilder(context)
+                    .setGraph(R.navigation.all_nav)
+                    .setDestination(R.id.showInfoFragment2)
+                    .setArguments(Bundle().apply { putString("showInfo", pair.second.toShow().toJson()) })
+                    .createPendingIntent()
+        */
+
+        //manager.dynamicShortcuts = shortcuts
     }
 
     companion object {
@@ -122,9 +185,13 @@ class HttpsUrlConnectionDownloader(fileDownloaderType: FileDownloaderType) : Htt
                 val tm: Array<TrustManager> = arrayOf(
                     object : X509TrustManager {
                         @SuppressLint("TrustAllX509TrustManager")
-                        override fun checkClientTrusted(p0: Array<out java.security.cert.X509Certificate>?, authType: String?) {}
+                        override fun checkClientTrusted(p0: Array<out java.security.cert.X509Certificate>?, authType: String?) {
+                        }
+
                         @SuppressLint("TrustAllX509TrustManager")
-                        override fun checkServerTrusted(p0: Array<out java.security.cert.X509Certificate>?, authType: String?) {}
+                        override fun checkServerTrusted(p0: Array<out java.security.cert.X509Certificate>?, authType: String?) {
+                        }
+
                         override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate>? = null
                     }
                 )

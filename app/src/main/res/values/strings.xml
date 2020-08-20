@@ -3,6 +3,8 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <style name="view_downloads_string">View Downloads</style>
+
     <plurals name="numFavorites">
         <item quantity="one">Search %d Favorite</item>
         <item quantity="other">Search %d Favorites</item>
