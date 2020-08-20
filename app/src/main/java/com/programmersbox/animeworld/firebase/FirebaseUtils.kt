@@ -14,22 +14,18 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
 import com.programmersbox.anime_db.EpisodeWatched
 import com.programmersbox.anime_db.ShowDbModel
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.loggingutils.Loged
-import com.programmersbox.loggingutils.f
 import com.programmersbox.loggingutils.fa
 import com.programmersbox.loggingutils.fd
-import com.programmersbox.gsonutils.fromJson
 import com.programmersbox.rxutils.toLatestFlowable
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
@@ -244,12 +240,17 @@ object FirebaseDb {
 
     fun insertEpisodeWatched(episodeWatched: EpisodeWatched) = Completable.create { emitter ->
         episodeDoc2?.document(episodeWatched.showUrl.urlToPath())
-            ?.update("watched", FieldValue.arrayUnion(episodeWatched.toFirebaseEpisodeWatched()))
-            //?.collection(episodeWatched.url.urlToPath())
-            //?.document("watched")
-            //?.set(episodeWatched.toFirebaseEpisodeWatched())
-            ?.addOnSuccessListener { emitter.onComplete() }
-            ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+            ?.set("create" to 1)
+            ?.addOnSuccessListener {
+                episodeDoc2?.document(episodeWatched.showUrl.urlToPath())
+                    //?.set("watched" to listOf(episodeWatched.toFirebaseEpisodeWatched()), SetOptions.merge())
+                    ?.update("watched", FieldValue.arrayUnion(episodeWatched.toFirebaseEpisodeWatched()))
+                    //?.collection(episodeWatched.url.urlToPath())
+                    //?.document("watched")
+                    //?.set(episodeWatched.toFirebaseEpisodeWatched())
+                    ?.addOnSuccessListener { emitter.onComplete() }
+                    ?.addOnFailureListener { emitter.onError(it) } ?: emitter.onComplete()
+            } ?: emitter.onComplete()
     }
 
     fun removeEpisodeWatched(episodeWatched: EpisodeWatched) = Completable.create { emitter ->

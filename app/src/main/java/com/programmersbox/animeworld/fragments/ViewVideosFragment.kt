@@ -104,7 +104,6 @@ class ViewVideosFragment : Fragment() {
                     //TODO: Add favorites to recent/all items
                     //TODO: maybe add a watch list?
                     //TODO: maybe add a watch later?
-                    //TODO: make sure that episodes watched firebase is working
                     //TODO: maybe put in live chart data?
                     //TODO: add multi-delete to download and video viewer
                 }
