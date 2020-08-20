@@ -58,4 +58,5 @@
             android:defaultValue="true"
             app:argType="boolean" />
     </activity>
+    <include app:graph="@navigation/settings_nav" />
 </navigation>

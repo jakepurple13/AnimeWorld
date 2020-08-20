@@ -104,35 +104,24 @@ class AnimeWorldApp : Application() {
         //download viewer
         shortcuts.add(
             ShortcutInfo.Builder(this, "download_viewer")
-                .setIcon(Icon.createWithBitmap(IconicsDrawable(this).icon(GoogleMaterial.Icon.gmd_video_library).toBitmap()))
-                .setShortLabel("View Videos")
-                .setLongLabel("View Videos")
+                .setIcon(Icon.createWithBitmap(IconicsDrawable(this).icon(GoogleMaterial.Icon.gmd_file_download).toBitmap()))
+                .setShortLabel("View Downloads")
+                .setLongLabel("View Downloads")
                 .setIntent(Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, DownloadViewerActivity::class.java))
                 .build()
         )
 
-        /*val viewVideos = ShortcutInfo.Builder(this, "video_viewer")
-            .setIcon(Icon.createWithBitmap(IconicsDrawable(this).icon(GoogleMaterial.Icon.gmd_video_library).toBitmap()))
-            .setShortLabel("View Videos")
-            .setLongLabel("View Videos")
-            .setIntent()
-            .build()*/
+        //video viewer
+        shortcuts.add(
+            ShortcutInfo.Builder(this, "video_viewer")
+                .setIcon(Icon.createWithBitmap(IconicsDrawable(this).icon(GoogleMaterial.Icon.gmd_video_library).toBitmap()))
+                .setShortLabel("View Videos")
+                .setLongLabel("View Videos")
+                .setIntent(Intent(Intent.ACTION_VIEW, Uri.parse("animeworld://view_videos")))
+                .build()
+        )
 
-        val f = NavDeepLinkBuilder(this)
-            .setGraph(R.navigation.settings_nav)
-            .setDestination(R.id.viewVideosFragment)
-
-        println(f)
-
-        /*
-        NavDeepLinkBuilder(context)
-                    .setGraph(R.navigation.all_nav)
-                    .setDestination(R.id.showInfoFragment2)
-                    .setArguments(Bundle().apply { putString("showInfo", pair.second.toShow().toJson()) })
-                    .createPendingIntent()
-        */
-
-        //manager.dynamicShortcuts = shortcuts
+        manager.dynamicShortcuts = shortcuts
     }
 
     companion object {
