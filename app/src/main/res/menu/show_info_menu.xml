@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/markAll"
-        android:title="Mark All Read/UnRead" />
+        android:icon="@android:drawable/stat_sys_download"
+        android:id="@+id/downloadMultiple"
+        android:title="Download Multiple" />
 
 </menu>

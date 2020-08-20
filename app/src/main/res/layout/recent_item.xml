@@ -16,6 +16,7 @@
         android:layout_margin="5dp">
 
         <LinearLayout
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -28,8 +29,10 @@
                 android:layout_height="match_parent" />
 
             <TextView
-                style="@style/TextAppearance.MaterialComponents.Headline4"
+                style="@style/TextAppearance.MaterialComponents.Headline5"
                 android:layout_margin="5dp"
+                android:minLines="2"
+                android:gravity="center_vertical"
                 tools:text="@tools:sample/full_names"
                 android:id="@+id/animeTitle"
                 android:layout_width="match_parent"

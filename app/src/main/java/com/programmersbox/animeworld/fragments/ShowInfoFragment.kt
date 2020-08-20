@@ -9,7 +9,6 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -218,8 +217,26 @@ class ShowInfoFragment : Fragment() {
                 inflate(R.menu.show_info_menu)
                 setOnMenuItemClickListener {
                     when (it.itemId) {
-                        R.id.markAll -> {
-                            Toast.makeText(requireContext(), "asdf", Toast.LENGTH_SHORT).show()
+                        R.id.downloadMultiple -> {
+                            val downloadItems = mutableListOf<EpisodeInfo>()
+                            val eps = episode.episodes
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Batch Download")
+                                .setMultiChoiceItems(eps.map { it.name }.toTypedArray(), null) { _, i, b ->
+                                    if (b) downloadItems.add(eps[i]) else downloadItems.remove(eps[i])
+                                }
+                                .setPositiveButton("Start Download") { d, _ ->
+                                    activity?.requestPermissions(
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) {
+                                        if (it.isGranted) {
+                                            downloadItems.forEach { GlobalScope.launch { fetchIt(it) } }
+                                        }
+                                    }
+                                    d.dismiss()
+                                }
+                                .show()
                         }
                     }
                     true
@@ -373,7 +390,6 @@ class ShowInfoFragment : Fragment() {
                 }
             }
         }
-
     }
 
     private fun fetchIt(ep: EpisodeInfo) {

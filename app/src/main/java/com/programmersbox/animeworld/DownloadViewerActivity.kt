@@ -3,16 +3,15 @@ package com.programmersbox.animeworld
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.programmersbox.animeworld.adapters.ActionListener
 import com.programmersbox.animeworld.adapters.FileAdapter
-import com.programmersbox.animeworld.utils.DeleteDialog
 import com.programmersbox.dragswipe.Direction
 import com.programmersbox.dragswipe.DragSwipeActionBuilder
-import com.programmersbox.dragswipe.DragSwipeActions
 import com.programmersbox.dragswipe.DragSwipeUtils
 import com.programmersbox.helpfulutils.notificationManager
 import com.programmersbox.loggingutils.Loged
@@ -54,6 +53,18 @@ class DownloadViewerActivity : AppCompatActivity(), ActionListener {
         )
 
         multiple_download_delete.setOnClickListener {
+
+            val downloadItems = mutableListOf<FileAdapter.DownloadData>()
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Delete")
+                .setMultiChoiceItems(fileAdapter!!.dataList.map { it.download?.file }.toTypedArray(), null) { _, i, b ->
+                    if (b) downloadItems.add(fileAdapter!!.dataList[i]) else downloadItems.remove(fileAdapter!!.dataList[i])
+                }
+                .setPositiveButton("Delete") { d, _ ->
+                    Fetch.getDefaultInstance().delete(downloadItems.map { it.id })
+                    d.dismiss()
+                }
+                .show()
 
             GlobalScope.launch {
 
@@ -139,20 +150,20 @@ class DownloadViewerActivity : AppCompatActivity(), ActionListener {
                     EpisodeActivity::class.java, download.id,
                     EpisodeActivity.KeyAndValue(ConstantValues.URL_INTENT, "${download.extras.map[ConstantValues.URL_INTENT]}"),
                     EpisodeActivity.KeyAndValue(ConstantValues.NAME_INTENT, "${download.extras.map[ConstantValues.NAME_INTENT]}"))*/
-           /* if (defaultSharedPreferences.getBoolean("useNotifications", true)) {
-                sendNotification(this@DownloadViewerActivity, android.R.mipmap.sym_def_app_icon,
-                    download.file.substring(download.file.lastIndexOf("/") + 1),
-                    "All Finished!",
-                    ConstantValues.CHANNEL_ID,
-                    StartVideoFromNotificationActivity::class.java, download.id,
-                    EpisodeActivity.KeyAndValue("video_path", download.file),
-                    EpisodeActivity.KeyAndValue("video_name", download.file))
-                sendGroupNotification(this@DownloadViewerActivity,
-                    android.R.mipmap.sym_def_app_icon,
-                    "Finished Downloads",
-                    ConstantValues.CHANNEL_ID,
-                    ViewVideosActivity::class.java)
-            }*/
+            /* if (defaultSharedPreferences.getBoolean("useNotifications", true)) {
+                 sendNotification(this@DownloadViewerActivity, android.R.mipmap.sym_def_app_icon,
+                     download.file.substring(download.file.lastIndexOf("/") + 1),
+                     "All Finished!",
+                     ConstantValues.CHANNEL_ID,
+                     StartVideoFromNotificationActivity::class.java, download.id,
+                     EpisodeActivity.KeyAndValue("video_path", download.file),
+                     EpisodeActivity.KeyAndValue("video_name", download.file))
+                 sendGroupNotification(this@DownloadViewerActivity,
+                     android.R.mipmap.sym_def_app_icon,
+                     "Finished Downloads",
+                     ConstantValues.CHANNEL_ID,
+                     ViewVideosActivity::class.java)
+             }*/
         }
 
         override fun onError(download: Download, error: Error, throwable: Throwable?) {
@@ -232,7 +243,15 @@ class DownloadViewerActivity : AppCompatActivity(), ActionListener {
         }
     }
 
-    fun sendNotification(context: Context, smallIconId: Int, title: String, message: String, channel_id: String, gotoActivity: Class<*>, notification_id: Int) {
+    fun sendNotification(
+        context: Context,
+        smallIconId: Int,
+        title: String,
+        message: String,
+        channel_id: String,
+        gotoActivity: Class<*>,
+        notification_id: Int
+    ) {
         // The id of the channel.
         val mBuilder = NotificationCompat.Builder(context, channel_id)
             .setSmallIcon(smallIconId)
