@@ -13,7 +13,7 @@
     <PreferenceCategory app:title="General">
 
         <Preference
-            app:icon="@android:drawable/stat_sys_download"
+            app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
             app:key="view_downloads"
             app:title="Downloads" />
 
@@ -41,9 +41,16 @@
             app:title="Download or Stream"
             app:summaryOn="Download"
             app:summaryOff="Stream"
-            app:icon="@android:drawable/stat_sys_download"
+            app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
             app:defaultValue="true"
             app:key="download_or_stream" />
+
+        <SeekBarPreference
+            app:title="Battery Alert Percentage"
+            app:icon="@drawable/ic_baseline_battery_alert_24"
+            app:seekBarIncrement="1"
+            app:min="1"
+            app:key="battery_alert" />
 
         <!--<ListPreference
             app:defaultValue="reply"

@@ -2,7 +2,6 @@ package com.programmersbox.animeworld.fragments
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -108,7 +107,7 @@ class ShowInfoFragment : Fragment() {
 
         viewDownloads.setOnClickListener { findNavController().navigate(R.id.action_showInfoFragment_to_downloadViewerActivity) }
 
-        favoriteshow.changeTint(Color.WHITE)
+        favoriteshow.changeTint(viewDownloads.currentTextColor)
         isFavorite.collectOnUi { favoriteshow.check(it) }
 
         showUrl.transformationMethod = ChromeCustomTabTransformationMethod(requireContext()) {

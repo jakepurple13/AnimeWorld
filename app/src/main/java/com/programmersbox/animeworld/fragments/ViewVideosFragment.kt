@@ -20,6 +20,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.utils.DeleteDialog
 import com.programmersbox.animeworld.utils.folderLocation
@@ -101,17 +102,35 @@ class ViewVideosFragment : Fragment() {
                     ).show()
 
                     //TODO: Clean up VideoPlayerActivity
-                    //TODO: Add favorites to recent/all items
+                    //TODO: Add favorites to recent/all items [need to add the action]
                     //TODO: maybe add a watch list?
                     //TODO: maybe add a watch later?
                     //TODO: maybe put in live chart data?
-                    //TODO: add multi-delete to download and video viewer
+                    //TODO: add multi-delete to video viewer
                 }
             }
         )
 
         loadVideos()
         view_video_refresh.setOnRefreshListener { loadVideos() }
+
+        multiple_video_delete.setOnClickListener {
+            val downloadItems = mutableListOf<File>()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete")
+                .setMultiChoiceItems(adapter.dataList.map { it.name }.toTypedArray(), null) { _, i, b ->
+                    if (b) downloadItems.add(adapter.dataList[i]) else downloadItems.remove(adapter.dataList[i])
+                }
+                .setPositiveButton("Delete") { d, _ ->
+                    downloadItems.forEach { f ->
+                        f.delete()
+                        adapter.notifyDataSetChanged()
+                    }
+                    //adapter.notifyDataSetChanged()
+                    d.dismiss()
+                }
+                .show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -185,11 +204,15 @@ class ViewVideosFragment : Fragment() {
                 retriever.setDataSource(context, Uri.fromFile(item))
                 val time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 retriever.release()
-                time?.toLong() ?: 0
+                time?.toLong()
             } catch (e: Exception) {
-                val mp = MediaPlayer.create(context, Uri.parse(item.path))
-                mp.duration.toLong()
-            }
+                try {
+                    val mp = MediaPlayer.create(context, Uri.parse(item.path))
+                    mp.duration.toLong()
+                } catch (e: Exception) {
+                    null
+                }
+            } ?: 0L
 
             /*convert millis to appropriate time*/
             val runTimeString = if (duration > TimeUnit.HOURS.toMillis(1)) {

@@ -37,6 +37,8 @@ var Context.folderLocation: String by sharedPrefNotNullDelegate(
 
 var Context.updateCheck: Boolean by sharedPrefNotNullDelegate(true)
 
+var Context.batteryAlertPercentage: Int by sharedPrefNotNullDelegate(20)
+
 var Context.downloadOrStream: Boolean by sharedPrefNotNullDelegate(true)
 
 val downloadOrStreamPublish = BehaviorSubject.create<Boolean>()

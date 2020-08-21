@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:background="#99000000"
         android:id="@+id/video_info_layout"
-        android:weightSum="3"
+        android:weightSum="4"
         android:orientation="horizontal">
 
         <ImageView
@@ -61,6 +61,15 @@
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
             app:srcCompat="@android:drawable/ic_lock_idle_lock" />-->
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/batteryInformation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            tools:icon="@android:drawable/ic_lock_idle_low_battery"
+            tools:text="20%"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"

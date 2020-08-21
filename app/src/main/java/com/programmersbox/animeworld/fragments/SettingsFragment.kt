@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -120,6 +121,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        findPreference<SeekBarPreference>("battery_alert")?.let { s ->
+            s.showSeekBarValue = true
+            s.setDefaultValue(requireContext().batteryAlertPercentage)
+            s.value = requireContext().batteryAlertPercentage
+            s.max = 100
+            s.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Int) {
+                    requireContext().batteryAlertPercentage = newValue
+                }
+                true
+            }
+        }
+
         findPreference<Preference>("start_check")?.let { p ->
             p.setOnPreferenceClickListener {
                 WorkManager.getInstance(requireContext()).enqueueUniqueWork(
@@ -176,7 +190,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<SwitchPreferenceCompat>("download_or_stream")?.let { s ->
             s.icon = ContextCompat.getDrawable(
                 requireContext(),
-                if (requireContext().downloadOrStream) android.R.drawable.stat_sys_download else R.drawable.ic_baseline_view_stream_24
+                if (requireContext().downloadOrStream) R.drawable.ic_baseline_vertical_align_bottom_24 else R.drawable.ic_baseline_view_stream_24
             )
             s.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
@@ -184,7 +198,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     downloadOrStreamPublish(newValue)
                     s.icon = ContextCompat.getDrawable(
                         requireContext(),
-                        if (newValue) android.R.drawable.stat_sys_download else R.drawable.ic_baseline_view_stream_24
+                        if (newValue) R.drawable.ic_baseline_vertical_align_bottom_24 else R.drawable.ic_baseline_view_stream_24
                     )
                 }
                 true

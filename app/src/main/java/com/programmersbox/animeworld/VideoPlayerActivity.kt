@@ -3,7 +3,9 @@ package com.programmersbox.animeworld
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.graphics.Color
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
@@ -30,12 +32,25 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import com.programmersbox.animeworld.utils.downloadOrStream
-import com.programmersbox.helpfulutils.enableImmersiveMode
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
+import com.mikepenz.iconics.utils.colorInt
+import com.mikepenz.iconics.utils.sizePx
+import com.programmersbox.animeworld.utils.batteryAlertPercentage
+import com.programmersbox.helpfulutils.*
+import com.programmersbox.rxutils.invoke
+import com.programmersbox.rxutils.toLatestFlowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.Flowables
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_video_player.*
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class VideoPlayerActivity : AppCompatActivity() {
 
@@ -214,6 +229,65 @@ class VideoPlayerActivity : AppCompatActivity() {
             }
         }*/
 
+        batterySetup()
+
+    }
+
+    private val disposable = CompositeDisposable()
+
+    private var batteryInfo: BroadcastReceiver? = null
+
+    private val batteryLevelAlert = PublishSubject.create<Float>()
+    private val batteryInfoItem = PublishSubject.create<Battery>()
+
+    enum class BatteryViewType(val icon: GoogleMaterial.Icon) {
+        CHARGING_FULL(GoogleMaterial.Icon.gmd_battery_charging_full),
+        DEFAULT(GoogleMaterial.Icon.gmd_battery_std),
+        FULL(GoogleMaterial.Icon.gmd_battery_full),
+        ALERT(GoogleMaterial.Icon.gmd_battery_alert),
+        UNKNOWN(GoogleMaterial.Icon.gmd_battery_unknown)
+    }
+
+    private fun batterySetup() {
+        batteryInformation.startDrawable = IconicsDrawable(this, GoogleMaterial.Icon.gmd_battery_std).apply {
+            colorInt = Color.WHITE
+            sizePx = batteryInformation.textSize.roundToInt()
+        }
+
+        Flowables.combineLatest(
+            batteryLevelAlert
+                .map { it <= batteryAlertPercentage }
+                .map { if (it) Color.RED else Color.WHITE }
+                .toLatestFlowable(),
+            batteryInfoItem
+                .map {
+                    when {
+                        it.isCharging -> BatteryViewType.CHARGING_FULL
+                        it.percent <= batteryAlertPercentage -> BatteryViewType.ALERT
+                        it.percent >= 95 -> BatteryViewType.FULL
+                        it.health == BatteryHealth.UNKNOWN -> BatteryViewType.UNKNOWN
+                        else -> BatteryViewType.DEFAULT
+                    }
+                }
+                .distinctUntilChanged { t1, t2 -> t1 != t2 }
+                .map { IconicsDrawable(this, it.icon).apply { sizePx = batteryInformation.textSize.roundToInt() } }
+                .toLatestFlowable()
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                it.second.colorInt = it.first
+                batteryInformation.startDrawable = it.second
+                batteryInformation.setTextColor(it.first)
+                batteryInformation.startDrawable?.setTint(it.first)
+            }
+            .addTo(disposable)
+
+        batteryInfo = battery {
+            batteryInformation.text = "${it.percent.toInt()}%"
+            batteryLevelAlert(it.percent)
+            batteryInfoItem(it)
+        }
     }
 
     override fun onDestroy() {
@@ -224,6 +298,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0)
         //MxVideoPlayer.backPress()
         //MxVideoPlayer.releaseAllVideos()
+        disposable.dispose()
+        unregisterReceiver(batteryInfo)
         super.onDestroy()
     }
 

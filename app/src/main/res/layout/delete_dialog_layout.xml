@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/rounded_corner"
-    android:backgroundTint="@color/cardview_dark_background"
-    tools:ignore="HardcodedText"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:backgroundTint="?android:colorBackground"
+    tools:ignore="HardcodedText">
 
     <!--<com.agik.AGIKSwipeButton.View.Swipe_Button_View
         android:id="@+id/slide_button"
@@ -29,11 +29,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/textView6"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        app:slider_icon_color="@color/alizarin"
         app:outer_color="@color/alizarin"
+        app:slider_icon_color="@color/alizarin"
         app:text="Delete" />
 
     <TextView
@@ -50,8 +50,8 @@
         android:id="@+id/delete_dismiss_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/slide_button"
         android:layout_below="@id/slide_button"
+        android:layout_alignEnd="@id/slide_button"
         android:layout_marginBottom="16dp"
         android:background="@drawable/dialog_bg"
         android:backgroundTint="@color/emeraldGreen"
@@ -61,11 +61,11 @@
         android:id="@+id/all_download_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/delete_dismiss_button"
         android:layout_alignStart="@+id/slide_button"
-        android:layout_alignBottom="@id/delete_dismiss_button"
         android:layout_alignTop="@+id/delete_dismiss_button"
+        android:layout_alignBottom="@id/delete_dismiss_button"
         android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/delete_dismiss_button"
         android:text="Current Progress: 100%" />
 
 </RelativeLayout>
