@@ -100,22 +100,20 @@ class AllFragment : BaseFragment() {
 
     private fun sourceLoad(sources: Sources) {
         println(sources)
-        GlobalScope.launch {
-            sources.getList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy {
-                    adapter.setListNotify(it)
-                    currentList.clear()
-                    currentList.addAll(it)
-                    allRefresh?.isRefreshing = false
-                    activity?.runOnUiThread {
-                        search_layout?.suffixText = "${it.size}"
-                        search_layout?.hint = "Search: ${requireContext().currentSource.name}"
-                    }
+        sources.getList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                adapter.setListNotify(it)
+                currentList.clear()
+                currentList.addAll(it)
+                allRefresh?.isRefreshing = false
+                activity?.runOnUiThread {
+                    search_layout?.suffixText = "${it.size}"
+                    search_layout?.hint = "Search: ${requireContext().currentSource.name}"
                 }
-                .addTo(disposable)
-        }
+            }
+            .addTo(disposable)
     }
 
     private fun DragSwipeAdapter<ShowInfo, *>.setData(newList: List<ShowInfo>) {

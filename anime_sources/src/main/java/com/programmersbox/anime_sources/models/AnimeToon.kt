@@ -1,18 +1,17 @@
 package com.programmersbox.anime_sources.models
 
-import com.programmersbox.anime_sources.ShowApi
+import com.programmersbox.anime_sources.*
+import com.programmersbox.anime_sources.utils.toJsoup
 import com.programmersbox.gsonutils.fromJson
+import com.programmersbox.rxutils.invoke
+import io.reactivex.Single
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
-import java.util.ArrayList
-import com.programmersbox.anime_sources.*
-import com.programmersbox.anime_sources.utils.toJsoup
-import com.programmersbox.rxutils.invoke
-import io.reactivex.Single
+import java.util.*
 
 object AnimeToonApi : ShowApi(
     baseUrl = "http://www.animetoon.org",
@@ -124,6 +123,17 @@ object AnimeToonApi : ShowApi(
 object AnimeToonDubbed : ShowApi(
     baseUrl = "http://www.animetoon.org",
     allPath = "dubbed-anime",
+    recentPath = "updates"
+) {
+    override fun getList(doc: Document) = AnimeToonApi.getList(doc)
+    override fun getRecent(doc: Document) = AnimeToonApi.getRecent(doc)
+    override fun getEpisodeInfo(source: ShowInfo, doc: Document) = AnimeToonApi.getEpisodeInfo(source, doc)
+    override fun getVideoLink(info: EpisodeInfo) = AnimeToonApi.getVideoLink(info)
+}
+
+object AnimeToonMovies : ShowApi(
+    baseUrl = "http://www.animetoon.org",
+    allPath = "movies",
     recentPath = "updates"
 ) {
     override fun getList(doc: Document) = AnimeToonApi.getList(doc)

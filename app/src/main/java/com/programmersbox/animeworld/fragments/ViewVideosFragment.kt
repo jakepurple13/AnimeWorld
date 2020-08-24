@@ -107,6 +107,8 @@ class ViewVideosFragment : Fragment() {
                     //TODO: maybe add a watch later?
                     //TODO: maybe put in live chart data?
                     //TODO: add multi-delete to video viewer
+                    //TODO: Add TileService
+                    //TODO: Add app info to settings
                 }
             }
         )

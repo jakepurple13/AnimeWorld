@@ -122,21 +122,19 @@ class ShowInfoFragment : Fragment() {
         println(args)
         println(args.showInfo)
 
-        GlobalScope.launch {
-            (showBuilder ?: args.showInfo)?.fromJson<ShowInfo>()?.getEpisodeInfo()
-                ?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribeBy {
-                    println(it)
-                    binding.show = it
-                    binding.executePendingBindings()
-                    adapter.addItems(it.episodes)
-                    activity?.actionBar?.title = it.name
-                    adapter.showUrl = it.source.url
-                    showSetup(it)
-                    shareButton.setOnClickListener { _ -> shareShow(it) }
-                }?.addTo(disposable)
-        }
+        (showBuilder ?: args.showInfo)?.fromJson<ShowInfo>()?.getEpisodeInfo()
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribeBy {
+                println(it)
+                binding.show = it
+                binding.executePendingBindings()
+                adapter.addItems(it.episodes)
+                activity?.actionBar?.title = it.name
+                adapter.showUrl = it.source.url
+                showSetup(it)
+                shareButton.setOnClickListener { _ -> shareShow(it) }
+            }?.addTo(disposable)
 
         moreInfoSetup()
 

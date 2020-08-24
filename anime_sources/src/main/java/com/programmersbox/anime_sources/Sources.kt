@@ -2,9 +2,11 @@ package com.programmersbox.anime_sources
 
 import com.programmersbox.anime_sources.models.AnimeToonApi
 import com.programmersbox.anime_sources.models.AnimeToonDubbed
+import com.programmersbox.anime_sources.models.AnimeToonMovies
 import com.programmersbox.anime_sources.models.GogoAnimeApi
 import com.programmersbox.anime_sources.utils.toJsoup
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 
 interface ShowApiService {
@@ -17,7 +19,7 @@ interface ShowApiService {
 
 enum class Sources(private val api: ShowApi) : ShowApiService by api {
     GOGOANIME(GogoAnimeApi),
-    ANIMETOON(AnimeToonApi), DUBBED_ANIME(AnimeToonDubbed)//, ANIMETOON_MOVIES(AnimeToonMovies), ANIMETOON_DUBBED(AnimeToonDubbed), ANIMETOON_RECENT(AnimeToonRecent)
+    ANIMETOON(AnimeToonApi), DUBBED_ANIME(AnimeToonDubbed), ANIMETOON_MOVIES(AnimeToonMovies), //ANIMETOON_DUBBED(AnimeToonDubbed), ANIMETOON_RECENT(AnimeToonRecent)
     //PUTLOCKER(PutLocker), PUTLOCKER_RECENT(PutLockerRecent);
     ;
 
@@ -44,8 +46,21 @@ abstract class ShowApi(
     override fun searchList(text: CharSequence, list: List<ShowInfo>): List<ShowInfo> =
         if (text.isEmpty()) list else list.filter { it.name.contains(text, true) }
 
-    override fun getRecent() = getRecent(recent())
-    override fun getList() = getList(all()).map { it.sortedBy(ShowInfo::name) }
-    override fun getEpisodeInfo(source: ShowInfo): Single<Episode> = getEpisodeInfo(source, source.url.toJsoup())
+    override fun getRecent() = Single.create<Document> { it.onSuccess(recent()) }
+        .subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.io())
+        .flatMap { getRecent(it) }
+
+    override fun getList() = Single.create<Document> { it.onSuccess(all()) }
+        .subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.io())
+        .flatMap { getList(it) }
+        .map { it.sortedBy(ShowInfo::name) }
+
+    override fun getEpisodeInfo(source: ShowInfo): Single<Episode> = Single.create<Document> { it.onSuccess(source.url.toJsoup()) }
+        .subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.io())
+        .flatMap { getEpisodeInfo(source, it) }
+
     internal abstract fun getEpisodeInfo(source: ShowInfo, doc: Document): Single<Episode>
 }

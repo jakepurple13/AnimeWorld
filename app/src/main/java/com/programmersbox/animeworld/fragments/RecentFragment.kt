@@ -32,8 +32,6 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recent.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
@@ -73,16 +71,14 @@ class RecentFragment : BaseFragment() {
     }
 
     private fun sourceLoad(sources: Sources) {
-        GlobalScope.launch {
-            sources.getRecent()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy {
-                    adapter.setListNotify(it)
-                    recentRefresh?.isRefreshing = false
-                }
-                .addTo(disposable)
-        }
+        sources.getRecent()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                adapter.setListNotify(it)
+                recentRefresh?.isRefreshing = false
+            }
+            .addTo(disposable)
     }
 
     private fun addShow(show: Episode) = Completable.concatArray(
