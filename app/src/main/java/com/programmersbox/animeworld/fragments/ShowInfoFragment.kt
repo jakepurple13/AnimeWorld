@@ -401,7 +401,7 @@ class ShowInfoFragment : Fragment() {
         val url = ep.getVideoLink().blockingGet()
         for (i in url) {
 
-            val filePath = requireContext().folderLocation + getNameFromUrl(i.link!!) + ".mp4"
+            val filePath = requireContext().folderLocation + getNameFromUrl(i.link!!) + "${ep.name}.mp4"
             //Loged.wtf("${File(filePath).exists()}")
             val request = Request(i.link!!, filePath)
             request.priority = Priority.HIGH

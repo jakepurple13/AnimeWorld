@@ -52,6 +52,11 @@
             app:min="1"
             app:key="battery_alert" />
 
+        <Preference
+            app:icon="@drawable/ic_baseline_open_in_browser_24"
+            app:key="goto_browser"
+            app:title="Go to current source in browser" />
+
         <!--<ListPreference
             app:defaultValue="reply"
             app:entries="@array/reply_entries"

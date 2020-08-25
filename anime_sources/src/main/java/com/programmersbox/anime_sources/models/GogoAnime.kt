@@ -9,9 +9,9 @@ import java.net.URI
 
 
 object GogoAnimeApi : ShowApi(
-    baseUrl = "https://www.gogoanime1.com/home",
-    allPath = "anime-list",
-    recentPath = "latest-episodes"
+    baseUrl = "https://www.gogoanime1.com",
+    allPath = "home/anime-list",
+    recentPath = "home/latest-episodes"
 ) {
 
     override fun getRecent(doc: Document): Single<List<ShowInfo>> = Single.create {

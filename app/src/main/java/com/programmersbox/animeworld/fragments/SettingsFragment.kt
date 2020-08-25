@@ -27,6 +27,7 @@ import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
 import com.programmersbox.rxutils.invoke
 import com.programmersbox.thirdpartyutils.into
+import com.programmersbox.thirdpartyutils.openInCustomChromeBrowser
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import java.util.concurrent.TimeUnit
@@ -204,6 +205,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
 
+        }
+
+        findPreference<Preference>("goto_browser")?.let { p ->
+            p.setOnPreferenceClickListener {
+                context?.let { c ->
+                    c.openInCustomChromeBrowser(c.currentSource.baseUrl) {
+                        addDefaultShareMenuItem()
+                    }
+                }
+
+                true
+            }
         }
 
     }

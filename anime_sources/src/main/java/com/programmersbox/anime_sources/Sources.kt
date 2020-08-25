@@ -1,15 +1,14 @@
 package com.programmersbox.anime_sources
 
-import com.programmersbox.anime_sources.models.AnimeToonApi
-import com.programmersbox.anime_sources.models.AnimeToonDubbed
-import com.programmersbox.anime_sources.models.AnimeToonMovies
-import com.programmersbox.anime_sources.models.GogoAnimeApi
+import com.programmersbox.anime_sources.models.*
 import com.programmersbox.anime_sources.utils.toJsoup
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 
 interface ShowApiService {
+    val baseUrl: String
+    val canScroll: Boolean get() = false
     fun getRecent(): Single<List<ShowInfo>>
     fun getList(): Single<List<ShowInfo>>
     fun searchList(text: CharSequence, list: List<ShowInfo>): List<ShowInfo>
@@ -20,7 +19,9 @@ interface ShowApiService {
 enum class Sources(private val api: ShowApi) : ShowApiService by api {
     GOGOANIME(GogoAnimeApi),
     ANIMETOON(AnimeToonApi), DUBBED_ANIME(AnimeToonDubbed), ANIMETOON_MOVIES(AnimeToonMovies), //ANIMETOON_DUBBED(AnimeToonDubbed), ANIMETOON_RECENT(AnimeToonRecent)
+
     //PUTLOCKER(PutLocker), PUTLOCKER_RECENT(PutLockerRecent);
+    KISSANIMEFREE(KissAnimeFree)
     ;
 
     companion object {
@@ -33,10 +34,11 @@ enum class Sources(private val api: ShowApi) : ShowApiService by api {
 }
 
 abstract class ShowApi(
-    internal val baseUrl: String,
+    override val baseUrl: String,
     internal val allPath: String,
     internal val recentPath: String
 ) : ShowApiService {
+    //TODO: Add page
     private fun recent() = "$baseUrl/$recentPath".toJsoup()
     private fun all() = "$baseUrl/$allPath".toJsoup()
 

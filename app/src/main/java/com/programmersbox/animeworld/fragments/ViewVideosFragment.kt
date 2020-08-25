@@ -109,6 +109,7 @@ class ViewVideosFragment : Fragment() {
                     //TODO: add multi-delete to video viewer
                     //TODO: Add TileService
                     //TODO: Add app info to settings
+                    //TODO: Add going to browser from current source in settings
                 }
             }
         )

@@ -14,6 +14,7 @@ import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.RecentItemBinding
 import com.programmersbox.animeworld.firebase.FirebaseDb
+import com.programmersbox.animeworld.utils.EndlessScrollingListener
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
 import com.programmersbox.animeworld.utils.toShowModel
@@ -51,6 +52,11 @@ class RecentFragment : BaseFragment() {
         recentAnimeList?.adapter = adapter
         recentRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
+        recentAnimeList?.addOnScrollListener(object : EndlessScrollingListener(recentAnimeList.layoutManager!!) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                //if (this@RecentFragment.requireContext().currentSource.canScroll && search_info.text.isNullOrEmpty())// loadNewManga()
+            }
+        })
         sourcePublish
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
