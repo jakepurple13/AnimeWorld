@@ -10,12 +10,17 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="General">
+    <PreferenceCategory
+        app:icon="@mipmap/round_logo"
+        app:title="About">
 
         <Preference
-            app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
-            app:key="view_downloads"
-            app:title="Downloads" />
+            app:key="about_version"
+            app:title="Version: " />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="General">
 
         <Preference
             app:icon="@drawable/ic_baseline_video_library_24"
@@ -38,19 +43,19 @@
             app:title="Storage Location" />
 
         <SwitchPreferenceCompat
-            app:title="Download or Stream"
-            app:summaryOn="Download"
-            app:summaryOff="Stream"
-            app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
             app:defaultValue="true"
-            app:key="download_or_stream" />
+            app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
+            app:key="download_or_stream"
+            app:summaryOff="Stream"
+            app:summaryOn="Download"
+            app:title="Download or Stream" />
 
         <SeekBarPreference
-            app:title="Battery Alert Percentage"
             app:icon="@drawable/ic_baseline_battery_alert_24"
-            app:seekBarIncrement="1"
+            app:key="battery_alert"
             app:min="1"
-            app:key="battery_alert" />
+            app:seekBarIncrement="1"
+            app:title="Battery Alert Percentage" />
 
         <Preference
             app:icon="@drawable/ic_baseline_open_in_browser_24"
@@ -73,16 +78,21 @@
             app:key="sync"
             app:title="Check for Updates Periodically" />
 
-        <SwitchPreferenceCompat
+        <!--<SwitchPreferenceCompat
             app:dependency="sync"
             app:key="attachment"
             app:summaryOff="@string/attachment_summary_off"
             app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+            app:title="@string/attachment_title" />-->
 
         <Preference
             app:key="start_check"
             app:title="Check for Updates" />
+
+        <Preference
+            app:icon="@android:drawable/ic_menu_upload"
+            app:key="upload_favorites"
+            app:title="Upload Favorites" />
 
     </PreferenceCategory>
 

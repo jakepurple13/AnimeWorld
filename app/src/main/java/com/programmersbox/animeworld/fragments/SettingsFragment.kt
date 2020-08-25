@@ -17,12 +17,16 @@ import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseUser
+import com.mikepenz.aboutlibraries.LibsBuilder
 import com.obsez.android.lib.filechooser.ChooserDialog
+import com.programmersbox.anime_db.ShowDatabase
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.AnimeWorldApp
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.firebase.FirebaseAuthentication
+import com.programmersbox.animeworld.firebase.FirebaseDb
 import com.programmersbox.animeworld.utils.*
+import com.programmersbox.gsonutils.fromJson
 import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
 import com.programmersbox.rxutils.invoke
@@ -30,6 +34,11 @@ import com.programmersbox.thirdpartyutils.into
 import com.programmersbox.thirdpartyutils.openInCustomChromeBrowser
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 
@@ -39,7 +48,89 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
+        accountSettings()
+        generalSettings()
+        aboutSettings()
+        syncSettings()
+    }
+
+    private fun accountSettings() {
         FirebaseAuthentication.authenticate(requireContext())
+        findPreference<Preference>("user_account")?.let { p ->
+
+            fun accountChanges(user: FirebaseUser?) {
+                Glide.with(this@SettingsFragment)
+                    .load(user?.photoUrl ?: R.mipmap.round_logo)
+                    .placeholder(R.mipmap.round_logo)
+                    .error(R.mipmap.round_logo)
+                    .fallback(R.mipmap.round_logo)
+                    .circleCrop()
+                    .into<Drawable> { resourceReady { image, _ -> p.icon = image } }
+                p.title = user?.displayName ?: "User"
+            }
+
+            FirebaseAuthentication.auth.addAuthStateListener {
+                accountChanges(it.currentUser)
+                findPreference<Preference>("upload_favorites")?.isEnabled = it.currentUser != null
+                findPreference<Preference>("upload_favorites")?.isVisible = it.currentUser != null
+            }
+
+            accountChanges(FirebaseAuthentication.currentUser)
+
+            p.setOnPreferenceClickListener {
+                FirebaseAuthentication.currentUser?.let {
+                    MaterialAlertDialogBuilder(this@SettingsFragment.requireContext())
+                        .setTitle("Log Out?")
+                        .setMessage("Are you sure you want to log out?")
+                        .setPositiveButton("Yes") { d, _ ->
+                            FirebaseAuthentication.signOut()
+                            d.dismiss()
+                        }
+                        .setNegativeButton("No") { d, _ -> d.dismiss() }
+                        .show()
+                } ?: FirebaseAuthentication.signIn(requireActivity())
+                true
+            }
+        }
+    }
+
+    private fun aboutSettings() {
+
+        findPreference<Preference>("about_version")?.let { p ->
+            p.summary = context?.packageManager?.getPackageInfo(requireContext().packageName, 0)?.versionName
+            p.setOnPreferenceClickListener {
+                GlobalScope.launch {
+                    @Suppress("BlockingMethodInNonBlockingContext") val info = try {
+                        withContext(Dispatchers.Default) {
+                            URL("https://raw.githubusercontent.com/jakepurple13/AnimeWorld/master/app/src/main/res/raw/update_changelog.json").readText()
+                        }
+                    } catch (e: Exception) {
+                        resources.openRawResource(R.raw.update_changelog).bufferedReader().readText()
+                    }.fromJson<AppInfo>()!!
+                    requireActivity().runOnUiThread {
+                        MaterialAlertDialogBuilder(this@SettingsFragment.requireContext())
+                            .setTitle("Update notes for ${info.version}")
+                            .setItems(info.releaseNotes.toTypedArray(), null)
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setNeutralButton("View Libraries Used") { d, _ ->
+                                d.dismiss()
+                                LibsBuilder().start(this@SettingsFragment.requireContext())
+                            }
+                            .setNegativeButton(R.string.gotoBrowser) { d, _ ->
+                                requireContext().openInCustomChromeBrowser("https://github.com/jakepurple13/AnimeWorld/releases/latest")
+                                d.dismiss()
+                            }
+                            .show()
+                    }
+
+                }
+                true
+            }
+        }
+
+    }
+
+    private fun generalSettings() {
 
         findPreference<Preference>("folder_storage")?.let { p ->
             p.summary = requireContext().folderLocation
@@ -65,41 +156,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
                 //requireContext().folderLocation
-                true
-            }
-        }
-
-        findPreference<Preference>("user_account")?.let { p ->
-
-            fun accountChanges(user: FirebaseUser?) {
-                Glide.with(this@SettingsFragment)
-                    .load(user?.photoUrl ?: R.mipmap.round_logo)
-                    .placeholder(R.mipmap.round_logo)
-                    .error(R.mipmap.round_logo)
-                    .fallback(R.mipmap.round_logo)
-                    .circleCrop()
-                    .into<Drawable> { resourceReady { image, _ -> p.icon = image } }
-                p.title = user?.displayName ?: "User"
-            }
-
-            FirebaseAuthentication.auth.addAuthStateListener {
-                accountChanges(it.currentUser)
-            }
-
-            accountChanges(FirebaseAuthentication.currentUser)
-
-            p.setOnPreferenceClickListener {
-                FirebaseAuthentication.currentUser?.let {
-                    MaterialAlertDialogBuilder(this@SettingsFragment.requireContext())
-                        .setTitle("Log Out?")
-                        .setMessage("Are you sure you want to log out?")
-                        .setPositiveButton("Yes") { d, _ ->
-                            FirebaseAuthentication.signOut()
-                            d.dismiss()
-                        }
-                        .setNegativeButton("No") { d, _ -> d.dismiss() }
-                        .show()
-                } ?: FirebaseAuthentication.signIn(requireActivity())
                 true
             }
         }
@@ -135,57 +191,24 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-        findPreference<Preference>("start_check")?.let { p ->
+        findPreference<Preference>("current_source")?.let { p ->
+            //it.entries = Sources.values().map { it.name }.toTypedArray()
+            //it.value = requireContext().currentSource.name
             p.setOnPreferenceClickListener {
-                WorkManager.getInstance(requireContext()).enqueueUniqueWork(
-                    "updateChecking",
-                    ExistingWorkPolicy.KEEP,
-                    OneTimeWorkRequestBuilder<UpdateWorker>()
-                        .setConstraints(
-                            Constraints.Builder()
-                                .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
-                                .setRequiresBatteryNotLow(false)
-                                .setRequiresCharging(false)
-                                .setRequiresDeviceIdle(false)
-                                .setRequiresStorageNotLow(false)
-                                .build()
-                        )
-                        .setInitialDelay(10, TimeUnit.SECONDS)
-                        .build()
-                )
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Choose a source")
+                    .setEnumSingleChoiceItems(
+                        Sources.values().map { it.name }.toTypedArray(),
+                        requireContext().currentSource
+                    ) { i, d ->
+                        sourcePublish(i)
+                        d.dismiss()
+                    }
+                    .show()
                 true
             }
-
-            findPreference<Preference>("current_source")?.let { p ->
-                //it.entries = Sources.values().map { it.name }.toTypedArray()
-                //it.value = requireContext().currentSource.name
-                p.setOnPreferenceClickListener {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Choose a source")
-                        .setEnumSingleChoiceItems(
-                            Sources.values().map { it.name }.toTypedArray(),
-                            requireContext().currentSource
-                        ) { i, d ->
-                            sourcePublish(i)
-                            d.dismiss()
-                        }
-                        .show()
-                    true
-                }
-                sourcePublish.subscribe { p.title = "Current Source: ${it.name}" }
-                    .addTo(disposable)
-            }
-
-            findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
-                s.setDefaultValue(requireContext().updateCheck)
-                s.setOnPreferenceChangeListener { _, newValue ->
-                    if (newValue is Boolean) {
-                        requireContext().updateCheck = newValue
-                        AnimeWorldApp.setupUpdate(requireContext(), newValue)
-                    }
-                    true
-                }
-            }
+            sourcePublish.subscribe { p.title = "Current Source: ${it.name}" }
+                .addTo(disposable)
         }
 
         findPreference<SwitchPreferenceCompat>("download_or_stream")?.let { s ->
@@ -218,7 +241,53 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
 
+    private fun syncSettings() {
+
+        findPreference<Preference>("start_check")?.let { p ->
+            p.setOnPreferenceClickListener {
+                WorkManager.getInstance(requireContext()).enqueueUniqueWork(
+                    "updateChecking",
+                    ExistingWorkPolicy.KEEP,
+                    OneTimeWorkRequestBuilder<UpdateWorker>()
+                        .setConstraints(
+                            Constraints.Builder()
+                                .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                                .setRequiresBatteryNotLow(false)
+                                .setRequiresCharging(false)
+                                .setRequiresDeviceIdle(false)
+                                .setRequiresStorageNotLow(false)
+                                .build()
+                        )
+                        .setInitialDelay(10, TimeUnit.SECONDS)
+                        .build()
+                )
+                true
+            }
+        }
+
+        findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
+            s.setDefaultValue(requireContext().updateCheck)
+            s.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    requireContext().updateCheck = newValue
+                    AnimeWorldApp.setupUpdate(requireContext(), newValue)
+                }
+                true
+            }
+        }
+
+        findPreference<Preference>("upload_favorites")?.let { p ->
+            p.setOnPreferenceClickListener {
+                GlobalScope.launch {
+                    val dao = ShowDatabase.getInstance(requireContext()).showDao()
+                    dao.getAllShowSync().forEach { FirebaseDb.insertShow(it) }
+                    dao.getAllEpisodesWatched().forEach { FirebaseDb.insertEpisodeWatched(it) }
+                }
+                true
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

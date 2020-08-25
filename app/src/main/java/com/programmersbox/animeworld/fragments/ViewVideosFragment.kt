@@ -108,8 +108,11 @@ class ViewVideosFragment : Fragment() {
                     //TODO: maybe put in live chart data?
                     //TODO: add multi-delete to video viewer
                     //TODO: Add TileService
+                    //TODO: Maybe also include MangaWorld link? And in MangaWorld include AnimeWorld?
+                    //TODO: Add in app update just like from MangaWorld
                     //TODO: Add app info to settings
                     //TODO: Get an actual search working
+                    //TODO: Add dependency to settings for if you're logged in, then enable uploading otherwise disable
                 }
             }
         )

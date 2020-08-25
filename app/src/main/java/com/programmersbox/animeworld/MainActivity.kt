@@ -14,6 +14,8 @@ import com.programmersbox.animeworld.utils.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             setupBottomNavBar()
         }
+
+        GlobalScope.launch { AppUpdateChecker(this@MainActivity).checkForUpdate() }
 
     }
 
