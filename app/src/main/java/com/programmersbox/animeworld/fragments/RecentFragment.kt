@@ -45,16 +45,24 @@ class RecentFragment : BaseFragment() {
     private val adapter: RecentAdapter by lazy { RecentAdapter() }
     private val dao by lazy { ShowDatabase.getInstance(requireContext()).showDao() }
     private val showListener = FirebaseDb.FirebaseListener()
+    private var count = 1
+    private var currentPage = 1
 
     override fun viewCreated(view: View, savedInstanceState: Bundle?) {
         //navController.setGraph(R.navigation.recent_nav)
         //println(navController.graph)
         recentAnimeList?.adapter = adapter
+        recentAnimeList?.setHasFixedSize(true)
         recentRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
         recentAnimeList?.addOnScrollListener(object : EndlessScrollingListener(recentAnimeList.layoutManager!!) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
                 //if (this@RecentFragment.requireContext().currentSource.canScroll && search_info.text.isNullOrEmpty())// loadNewManga()
+                if (this@RecentFragment.requireContext().currentSource.canScroll) {
+                    count++
+                    recentRefresh.isRefreshing = true
+                    loadMore(this@RecentFragment.requireContext().currentSource, count)
+                }
             }
         })
         sourcePublish
@@ -76,12 +84,24 @@ class RecentFragment : BaseFragment() {
             .addTo(disposable)
     }
 
-    private fun sourceLoad(sources: Sources) {
-        sources.getRecent()
+    private fun sourceLoad(sources: Sources, page: Int = 1) {
+        sources.getRecent(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy {
                 adapter.setListNotify(it)
+                recentRefresh?.isRefreshing = false
+                count = 1
+            }
+            .addTo(disposable)
+    }
+
+    private fun loadMore(sources: Sources, page: Int = 1) {
+        sources.getRecent(page)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                adapter.addItems(it)
                 recentRefresh?.isRefreshing = false
             }
             .addTo(disposable)

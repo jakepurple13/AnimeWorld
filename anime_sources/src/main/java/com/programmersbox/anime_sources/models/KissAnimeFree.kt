@@ -12,8 +12,13 @@ import java.net.URI
 object KissAnimeFree : ShowApi(
     baseUrl = "https://kissanimefree.net",
     recentPath = "status/ongoing/",
-    allPath = ""
+    allPath = "anime-list"
 ) {
+
+    override val canScroll: Boolean get() = true
+
+    override fun recentPage(page: Int) = "/page/$page/"
+    override fun allPage(page: Int): String = "/page/$page/"
 
     override fun getRecent(doc: Document): Single<List<ShowInfo>> = Single.create {
         try {
@@ -26,7 +31,13 @@ object KissAnimeFree : ShowApi(
     }
 
     override fun getList(doc: Document): Single<List<ShowInfo>> = Single.create {
-        it.onSuccess(emptyList())
+        try {
+            it.onSuccess(doc.select("span.movie-title").map { s ->
+                ShowInfo(name = s.text(), s.select("a[href^=http]").attr("abs:href"), Sources.KISSANIMEFREE)
+            })
+        } catch (e: Exception) {
+            it.onError(e)
+        }
     }
 
     override fun getEpisodeInfo(source: ShowInfo, doc: Document): Single<Episode> = Single.create { emitter ->

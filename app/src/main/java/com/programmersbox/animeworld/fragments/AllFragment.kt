@@ -15,6 +15,7 @@ import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.animeworld.databinding.RecentItemBinding
 import com.programmersbox.animeworld.firebase.FirebaseDb
+import com.programmersbox.animeworld.utils.EndlessScrollingListener
 import com.programmersbox.animeworld.utils.currentSource
 import com.programmersbox.animeworld.utils.sourcePublish
 import com.programmersbox.dragswipe.CheckAdapter
@@ -50,17 +51,34 @@ class AllFragment : BaseFragment() {
     private val currentList = mutableListOf<ShowInfo>()
     private val dao by lazy { ShowDatabase.getInstance(requireContext()).showDao() }
     private val showListener = FirebaseDb.FirebaseListener()
+    private var count = 1
 
     override fun viewCreated(view: View, savedInstanceState: Bundle?) {
         allAnimeList?.adapter = adapter
         allRefresh?.isRefreshing = true
         //context?.currentSource?.let { sourceLoad(it) }
+        allAnimeList?.addOnScrollListener(object : EndlessScrollingListener(allAnimeList.layoutManager!!) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                //if (this@RecentFragment.requireContext().currentSource.canScroll && search_info.text.isNullOrEmpty())// loadNewManga()
+                if (requireContext().currentSource.canScroll) {
+                    count++
+                    //loadMore(this@RecentFragment.requireContext().currentSource, count)
+                    allRefresh.isRefreshing = true
+                    context?.currentSource?.let { sourceLoad(it, count) }
+                }
+            }
+        })
         sourcePublish
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { sourceLoad(it) }
+            .subscribe {
+                count = 1
+                currentList.clear()
+                adapter.setListNotify(emptyList())
+                sourceLoad(it)
+            }
             .addTo(disposable)
-        allRefresh?.setOnRefreshListener { context?.currentSource?.let { sourceLoad(it) } }
+        allRefresh?.setOnRefreshListener { context?.currentSource?.let { sourceLoad(it, count) } }
         search_info
             .textChanges()
             .subscribeOn(Schedulers.io())
@@ -98,18 +116,17 @@ class AllFragment : BaseFragment() {
             .addTo(disposable)
     }
 
-    private fun sourceLoad(sources: Sources) {
-        println(sources)
-        sources.getList()
+    private fun sourceLoad(sources: Sources, page: Int = 1) {
+        sources.getList(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy {
-                adapter.setListNotify(it)
-                currentList.clear()
+                adapter.addItems(it)
+                //currentList.clear()
                 currentList.addAll(it)
                 allRefresh?.isRefreshing = false
                 activity?.runOnUiThread {
-                    search_layout?.suffixText = "${it.size}"
+                    search_layout?.suffixText = "${currentList.size}"
                     search_layout?.hint = "Search: ${requireContext().currentSource.name}"
                 }
             }
