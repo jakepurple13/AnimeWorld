@@ -38,7 +38,7 @@
             <com.ncorti.slidetoact.SlideToActView
                 android:id="@+id/okay_to_download"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:visibility="visible"
                 app:animate_completion="true"

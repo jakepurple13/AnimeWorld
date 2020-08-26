@@ -9,12 +9,12 @@ View [Changelog](https://github.com/jakepurple13/AnimeWorld/blob/master/app/src/
 
 # Screenshots
 <p align="center">
-  <img src="/ss/main.png" width="32%"/>
-  <img src="/ss/sources.png" width="32%"/>
-  <img src="/ss/search.png" width="32%"/>
+  <img src="/ss/recent.png" width="32%"/>
+  <img src="/ss/all.png" width="32%"/>
+  <img src="/ss/settings.png" width="32%"/>
+  <img src="/ss/showinfo.png" width="32%"/>
+  <img src="/ss/infomoreinfo.png" width="32%"/>
   <img src="/ss/favorites.png" width="32%"/>
-  <img src="/ss/mangaInfo.png" width="32%"/>
-  <img src="/ss/moreInfo.png" width="32%"/>
 </p>
 
 # Issues
