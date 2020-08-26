@@ -1,5 +1,6 @@
 # AnimeWorld
 An Anime Watcher App
+
 Lets you download and stream anime from multiple different sources.
 
 # [Latest Release](https://github.com/jakepurple13/AnimeWorld/releases/latest)
