@@ -72,7 +72,7 @@ object KissAnimeFree : ShowApi(
 
             val url = if (regex1.find()) regex1.group(1) else null
 
-            println(url)
+            //println(url)
 
             val next = "https:$url".toJsoup()
 
@@ -82,7 +82,7 @@ object KissAnimeFree : ShowApi(
 
             val t = if (second.find()) second.group(1) else null
 
-            println(t)
+            //println(t)
 
             Jsoup.connect(t?.replace("/v/", "/api/source/"))
                 .header("referrer", t)
@@ -95,7 +95,7 @@ object KissAnimeFree : ShowApi(
                 .post()
                 .text()
                 .fromJson<Base>()
-                .also { println(it) }
+                //.also { println(it) }
                 ?.data
                 ?.mapNotNull { it.file }
                 .orEmpty()

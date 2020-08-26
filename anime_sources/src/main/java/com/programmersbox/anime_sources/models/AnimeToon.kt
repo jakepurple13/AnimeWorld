@@ -13,13 +13,13 @@ import java.io.InputStreamReader
 import java.net.URL
 import java.util.*
 
-object AnimeToonApi : ShowApi(
+abstract class AnimeToon(allPath: String, recentPath: String) : ShowApi(
     baseUrl = "http://www.animetoon.org",
-    allPath = "cartoon",
-    recentPath = "updates"
+    allPath = allPath,
+    recentPath = recentPath
 ) {
-    private fun toShowInfo(element: Element) = ShowInfo(element.text(), element.attr("abs:href"), Sources.ANIMETOON)
-
+    protected abstract val sources: Sources
+    private fun toShowInfo(element: Element) = ShowInfo(element.text(), element.attr("abs:href"), sources)
     override fun getList(doc: Document): Single<List<ShowInfo>> = Single.create {
         try {
             it(doc.allElements.select("td").select("a[href^=http]").map(this::toShowInfo))
@@ -113,31 +113,25 @@ object AnimeToonApi : ShowApi(
             it(e)
         }
     }
-
 }
 
-/*object AnimeToonMovies : AnimeToonApi("http://www.animetoon.org/movies") {
-    override fun getList(doc: Document): List<ShowInfo> = AnimeToon.getList(doc)
-}*/
+object AnimeToonApi : AnimeToon(
+    allPath = "cartoon",
+    recentPath = "updates"
+) {
+    override val sources: Sources get() = Sources.ANIMETOON
+}
 
-object AnimeToonDubbed : ShowApi(
-    baseUrl = "http://www.animetoon.org",
+object AnimeToonDubbed : AnimeToon(
     allPath = "dubbed-anime",
     recentPath = "updates"
 ) {
-    override fun getList(doc: Document) = AnimeToonApi.getList(doc)
-    override fun getRecent(doc: Document) = AnimeToonApi.getRecent(doc)
-    override fun getEpisodeInfo(source: ShowInfo, doc: Document) = AnimeToonApi.getEpisodeInfo(source, doc)
-    override fun getVideoLink(info: EpisodeInfo) = AnimeToonApi.getVideoLink(info)
+    override val sources: Sources get() = Sources.DUBBED_ANIME
 }
 
-object AnimeToonMovies : ShowApi(
-    baseUrl = "http://www.animetoon.org",
+object AnimeToonMovies : AnimeToon(
     allPath = "movies",
     recentPath = "updates"
 ) {
-    override fun getList(doc: Document) = AnimeToonApi.getList(doc)
-    override fun getRecent(doc: Document) = AnimeToonApi.getRecent(doc)
-    override fun getEpisodeInfo(source: ShowInfo, doc: Document) = AnimeToonApi.getEpisodeInfo(source, doc)
-    override fun getVideoLink(info: EpisodeInfo) = AnimeToonApi.getVideoLink(info)
+    override val sources: Sources get() = Sources.ANIMETOON_MOVIES
 }
