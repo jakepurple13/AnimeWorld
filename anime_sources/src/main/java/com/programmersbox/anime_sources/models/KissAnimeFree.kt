@@ -30,6 +30,15 @@ object KissAnimeFree : ShowApi(
         }
     }
 
+    override fun searchList(text: CharSequence, list: List<ShowInfo>): List<ShowInfo> {
+        return try {
+            if (text.isNotEmpty()) getList(Jsoup.connect("https://kissanimefree.net/?s=$text").get()).blockingGet()
+            else null
+        } catch (e: Exception) {
+            null
+        } ?: super.searchList(text, list)
+    }
+
     override fun getList(doc: Document): Single<List<ShowInfo>> = Single.create {
         try {
             it.onSuccess(doc.select("span.movie-title").map { s ->

@@ -42,25 +42,19 @@
             android:layout_height="match_parent"
             android:paddingHorizontal="20dp"
             android:layout_marginTop="5dp"
-            android:src="@android:drawable/ic_menu_revert" />
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            app:tint="#ffffff"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/video_name"
             android:layout_marginTop="5dp"
             tools:text="Title!"
             android:layout_weight="2"
+            android:textColor="#ffffff"
             android:gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
-
-        <!--<ImageButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:id="@+id/video_lock"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="5dp"
-            app:srcCompat="@android:drawable/ic_lock_idle_lock" />-->
 
         <TextView
             android:id="@+id/batteryInformation"
@@ -84,35 +78,9 @@
             android:textColor="#ffffff"
             app:iconTint="#ffffff"
             android:text="Unlocked"
-            app:icon="@android:drawable/ic_lock_idle_lock" />
+            app:icon="@android:drawable/ic_lock_idle_lock"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
-
-    <!--<ImageButton
-        android:id="@+id/video_lock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        app:srcCompat="@android:drawable/ic_lock_idle_lock" />
-    <TextView
-        android:layout_toStartOf="@id/video_lock"
-        android:layout_toEndOf="@id/video_back"
-        android:id="@+id/video_name"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentTop="true"
-        android:text="Title!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <ImageView
-        android:id="@+id/video_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:src="@drawable/mx_back"/>-->
 
 </RelativeLayout>

@@ -101,7 +101,6 @@ class ViewVideosFragment : Fragment() {
                         listener
                     ).show()
 
-                    //TODO: Clean up VideoPlayerActivity
                     //TODO: Add favorites to recent/all items [need to add the action]
                     //TODO: maybe add a watch list?
                     //TODO: maybe add a watch later?
@@ -109,8 +108,6 @@ class ViewVideosFragment : Fragment() {
                     //TODO: add multi-delete to video viewer
                     //TODO: Add TileService
                     //TODO: Maybe also include MangaWorld link? And in MangaWorld include AnimeWorld?
-                    //TODO: Get an actual search working
-                    //TODO: Maybe for search, bring up a new fragment
                 }
             }
         )

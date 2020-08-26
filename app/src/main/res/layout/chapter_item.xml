@@ -42,7 +42,9 @@
                 android:layout_weight="1"
                 android:visibility="visible"
                 app:animate_completion="true"
-                app:area_margin="10dp"
+                android:layout_gravity="center_vertical"
+                app:icon_margin="0dp"
+                app:slider_height="50dp"
                 app:outer_color="@color/emeraldGreen"
                 app:slider_icon_color="@color/emeraldGreen"
                 app:text="Download" />

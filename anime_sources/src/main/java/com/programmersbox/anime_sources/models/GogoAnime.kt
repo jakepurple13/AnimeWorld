@@ -2,6 +2,7 @@ package com.programmersbox.anime_sources.models
 
 import com.programmersbox.anime_sources.*
 import com.programmersbox.anime_sources.utils.toJsoup
+import com.programmersbox.gsonutils.getJsonApi
 import com.programmersbox.rxutils.invoke
 import io.reactivex.Single
 import org.jsoup.nodes.Document
@@ -71,10 +72,33 @@ object GogoAnimeApi : ShowApi(
             it(e)
         }
     }
-}
 
-/*
-object GogoAnimeMovies : GogoAnimeApi("https://www.gogoanime1.com/home/anime-list") {
-    override fun getList(doc: Document): List<ShowInfo> = GogoAnime.getList(doc).filter { it.name.contains("movie", ignoreCase = true) }
+    override fun searchList(text: CharSequence, list: List<ShowInfo>): List<ShowInfo> {
+        return try {
+            if (text.isNotEmpty()) getJsonApi<Base>("https://www.gogoanime1.com/search/topSearch?q=$text")
+                ?.data
+                .orEmpty()
+                .map { ShowInfo(it.name.orEmpty(), "https://www.gogoanime1.com/watch/${it.seo_name}", Sources.GOGOANIME) }
+            else null
+        } catch (e: Exception) {
+            null
+        } ?: super.searchList(text, list)
+    }
+
+    private data class Base(val status: Number?, val data: List<DataShowData>?)
+
+    private data class DataShowData(
+        val rel: Number?,
+        val anime_id: Number?,
+        val name: String?,
+        val has_image: Number?,
+        val seo_name: String?,
+        val score_count: Number?,
+        val score: Number?,
+        val aired: Number?,
+        val episodes: List<Episodes>?
+    )
+
+    private data class Episodes(val episode_id: Number?, val episode_seo_name: String?, val episode_name: String?)
+
 }
-*/

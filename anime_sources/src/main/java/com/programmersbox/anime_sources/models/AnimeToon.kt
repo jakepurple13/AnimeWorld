@@ -5,6 +5,7 @@ import com.programmersbox.anime_sources.utils.toJsoup
 import com.programmersbox.gsonutils.fromJson
 import com.programmersbox.rxutils.invoke
 import io.reactivex.Single
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.io.BufferedReader
@@ -113,6 +114,17 @@ abstract class AnimeToon(allPath: String, recentPath: String) : ShowApi(
             it(e)
         }
     }
+
+    override fun searchList(text: CharSequence, list: List<ShowInfo>): List<ShowInfo> {
+        return try {
+            if (text.isNotEmpty()) Jsoup.connect("http://www.animetoon.org/toon/search?key=$text").get()
+                .select("div.right_col").select("h3").select("a[href^=http]").map(this::toShowInfo)
+            else null
+        } catch (e: Exception) {
+            null
+        } ?: super.searchList(text, list)
+    }
+
 }
 
 object AnimeToonApi : AnimeToon(

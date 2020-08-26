@@ -24,7 +24,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.navigation.navArgs
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -88,14 +87,10 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var mScreenWidth: Int = 0
     private var mScreenHeight: Int = 0
 
-    private lateinit var mAudioManager: AudioManager
+    private val mAudioManager: AudioManager by lazy { audioManager }
 
     @Suppress("PrivatePropertyName")
     private val THRESHOLD = 70
-
-    @Suppress("PrivatePropertyName")
-    private val SCREEN_WINDOW_FULLSCREEN = 2
-    private var mCurrentScreen = SCREEN_WINDOW_FULLSCREEN
 
     private var mVolumeDialog: Dialog? = null
     private var mDialogVolumeProgressBar: ProgressBar? = null
@@ -122,30 +117,18 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         video_back.setOnClickListener { finish() }
 
-        /* window.decorView.systemUiVisibility = flags
-         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-         val decorView = window.decorView
-         decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-             if (visibility.and(View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                 decorView.systemUiVisibility = flags
-             }
-         }*/
-
         if (args.showPath.isEmpty()) {
             finish()
         }
 
         video_name.text = args.showName
 
-        val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+        currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
 
         mScreenWidth = this.resources.displayMetrics.widthPixels
         mScreenHeight = this.resources.displayMetrics.heightPixels
 
-        mAudioManager = audio
-
-        player = ExoPlayerFactory.newSimpleInstance(this)
+        player = SimpleExoPlayer.Builder(this).build()
 
         player.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -165,11 +148,8 @@ class VideoPlayerActivity : AppCompatActivity() {
             player.prepare(videoSource)
         } else {
             //stream
-            fun buildMediaSource(uri: Uri): MediaSource {
-                return ProgressiveMediaSource.Factory(
-                    DefaultHttpDataSourceFactory("exoplayer-codelab")
-                ).createMediaSource(uri)
-            }
+            fun buildMediaSource(uri: Uri): MediaSource =
+                ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("exoplayer-codelab")).createMediaSource(uri)
 
             val source = buildMediaSource(args.showPath.toUri())
             player.prepare(source, true, false)
@@ -195,39 +175,8 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         initVideoPlayer()
 
-        //mpw_video_player.hideFullScreenButton = true
-        //mpw_video_player.autoStartPlay(path, MxVideoPlayer.SCREEN_WINDOW_FULLSCREEN, name)
-
         val pos = getSharedPreferences("videos", Context.MODE_PRIVATE).getLong(args.showPath, 0)
-        //Loged.wtf("$path at $pos")
         playerView.player!!.seekTo(pos)
-        //mpw_video_player.seekToPosition(pos)
-
-        /*mpw_video_player.playerListener = object : MxPlayerListener {
-            override fun onComplete() {
-                try {
-                    this@VideoPlayerActivity.onBackPressed()
-                    //finish()
-                } catch (e: NullPointerException) {
-                }
-            }
-            override fun onStarted() {
-                updatePictureInPictureActions(android.R.drawable.ic_media_pause, labelPause,
-                        CONTROL_TYPE_PAUSE, REQUEST_PAUSE)
-            }
-            override fun onStopped() {
-                currentPos = mpw_video_player.currentPositionInVideo
-                updatePictureInPictureActions(android.R.drawable.ic_media_play, labelPlay,
-                        CONTROL_TYPE_PLAY, REQUEST_PLAY)
-            }
-            override fun onBackPress() {
-               //currentPos = mpw_video_player.currentPositionInVideo
-                finish()
-            }
-            override fun onPrepared() {
-                mpw_video_player.seekToPosition(pos)
-            }
-        }*/
 
         batterySetup()
 
@@ -248,6 +197,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         UNKNOWN(GoogleMaterial.Icon.gmd_battery_unknown)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun batterySetup() {
         batteryInformation.startDrawable = IconicsDrawable(this, GoogleMaterial.Icon.gmd_battery_std).apply {
             colorInt = Color.WHITE
@@ -292,28 +242,14 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         val position = currentPos
-        //Loged.wtf("$path at $position")
         getSharedPreferences("videos", Context.MODE_PRIVATE).edit().putLong(args.showPath, position).apply()
-        val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0)
-        //MxVideoPlayer.backPress()
-        //MxVideoPlayer.releaseAllVideos()
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0)
         disposable.dispose()
         unregisterReceiver(batteryInfo)
         super.onDestroy()
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            //window.decorView.systemUiVisibility = flags
-        } else {
-
-        }
-    }
-
     override fun onStop() {
-        //mpw_video_player.pauseVideo()
         try {
             playerView.player!!.playWhenReady = false
             playerView.player!!.release()
@@ -325,11 +261,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        //currentPos = mpw_video_player.currentPositionInVideo
         currentPos = playerView.player!!.currentPosition
-        /*if (MxVideoPlayer.backPress()) {
-            return
-        }*/
         playerView.player!!.release()
         super.onBackPressed()
     }
@@ -347,9 +279,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun initVideoPlayer() {
-        gesture = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-
-        })
+        gesture = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {})
         gesture.setOnDoubleTapListener(object : GestureDetector.OnDoubleTapListener {
             override fun onDoubleTap(p0: MotionEvent?): Boolean {
                 val play = playerView.findViewById<ImageButton>(R.id.exo_play)

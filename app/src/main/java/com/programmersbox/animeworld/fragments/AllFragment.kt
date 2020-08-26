@@ -60,7 +60,7 @@ class AllFragment : BaseFragment() {
         allAnimeList?.addOnScrollListener(object : EndlessScrollingListener(allAnimeList.layoutManager!!) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
                 //if (this@RecentFragment.requireContext().currentSource.canScroll && search_info.text.isNullOrEmpty())// loadNewManga()
-                if (requireContext().currentSource.canScroll) {
+                if (requireContext().currentSource.canScroll && (search_info.text?.isEmpty() != false)) {
                     count++
                     //loadMore(this@RecentFragment.requireContext().currentSource, count)
                     allRefresh.isRefreshing = true

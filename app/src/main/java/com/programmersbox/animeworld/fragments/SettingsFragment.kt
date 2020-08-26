@@ -117,7 +117,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                                 LibsBuilder().start(this@SettingsFragment.requireContext())
                             }
                             .setNegativeButton(R.string.gotoBrowser) { d, _ ->
-                                requireContext().openInCustomChromeBrowser("https://github.com/jakepurple13/AnimeWorld/releases/latest")
+                                requireContext().openInCustomChromeBrowser("https://github.com/jakepurple13/AnimeWorld")
                                 d.dismiss()
                             }
                             .show()
