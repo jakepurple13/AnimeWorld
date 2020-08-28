@@ -197,7 +197,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             p.setDefaultValue("system")
             p.setOnPreferenceChangeListener { _, newValue ->
                 when (newValue) {
-                    "system" -> AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                    "system" -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                     "light" -> AppCompatDelegate.MODE_NIGHT_NO
                     "dark" -> AppCompatDelegate.MODE_NIGHT_YES
                     else -> null

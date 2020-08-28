@@ -23,11 +23,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.navigation.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.github.rubensousa.previewseekbar.PreviewBar
+import com.github.rubensousa.previewseekbar.exoplayer.PreviewTimeBar
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
@@ -46,10 +56,12 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_video_player.*
+import kotlinx.android.synthetic.main.exo_controls.*
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL as IMAGE_ORIGINAL_SIZE
 
 class VideoPlayerActivity : AppCompatActivity() {
 
@@ -72,9 +84,9 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var gesture: GestureDetector
 
     private var lockTimer = TimerStuff {
-        video_info_layout.animate().setDuration(500).alpha(0f).withEndAction {
+        /*video_info_layout.animate().setDuration(500).alpha(0f).withEndAction {
             topShowing.set(false)
-        }
+        }*/
     }
 
     private var mDownX: Float = 0.toFloat()
@@ -108,7 +120,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var mDownPosition: Int = 0
     private var mSeekTimePosition: Int = 0
 
-    private var topShowing = AtomicBoolean(true)
+    private val topShowing = AtomicBoolean(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,6 +151,34 @@ class VideoPlayerActivity : AppCompatActivity() {
             }
         })
 
+        findViewById<PreviewTimeBar>(R.id.exo_progress)?.let {
+            it.setPreviewLoader { currentPosition, _ ->
+                Glide.with(this)
+                    .asBitmap()
+                    .load(args.showPath)
+                    .thumbnail(0.05f)
+                    .frame(currentPosition * 1000)
+                    .override(IMAGE_ORIGINAL_SIZE, IMAGE_ORIGINAL_SIZE)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(findViewById(R.id.imageView))
+            }
+
+            it.addOnScrubListener(object : PreviewBar.OnScrubListener {
+                override fun onScrubStart(previewBar: PreviewBar?) {
+                    player.playWhenReady = false
+                }
+
+                override fun onScrubMove(previewBar: PreviewBar?, progress: Int, fromUser: Boolean) {
+
+                }
+
+                override fun onScrubStop(previewBar: PreviewBar?) {
+                    player.playWhenReady = true
+                }
+
+            })
+        }
+
         playerView.player = player
 
         //download
@@ -147,11 +187,12 @@ class VideoPlayerActivity : AppCompatActivity() {
             val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(args.showPath.toUri())
             player.prepare(videoSource)
         } else {
-            //stream
-            fun buildMediaSource(uri: Uri): MediaSource =
-                ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("exoplayer-codelab")).createMediaSource(uri)
 
-            val source = buildMediaSource(args.showPath.toUri())
+            //stream
+            //fun buildMediaSource(uri: Uri): MediaSource =
+            //ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("exoplayer-codelab")).createMediaSource(uri)
+
+            val source = getMediaSource(args.showPath.toUri(), false)!!
             player.prepare(source, true, false)
         }
         playerView.controllerAutoShow = true
@@ -401,12 +442,13 @@ class VideoPlayerActivity : AppCompatActivity() {
             }
         }
 
-        playerView.useController = !locked
+        //playerView.useController = !locked
 
+        showLayout()
         if (topShowing.get()) {
             lockTimer.action()
         } else {
-            showLayout()
+            //showLayout()
             lockTimer.startLock()
         }
         false
@@ -590,6 +632,44 @@ class VideoPlayerActivity : AppCompatActivity() {
             myHandler.removeCallbacks(myRunnable)
             myHandler.postDelayed(myRunnable, TIME_TO_WAIT)
         }
+    }
+
+    private val bandwidthMeter by lazy { DefaultBandwidthMeter.Builder(this).build() }
+
+    private fun getMediaSource(url: Uri, preview: Boolean): MediaSource? {
+        return when (val f = Util.inferContentType(url.lastPathSegment.toString())) {
+            C.TYPE_SS -> SsMediaSource.Factory(
+                DefaultDataSourceFactory(
+                    this, null,
+                    getHttpDataSourceFactory(preview)
+                )
+            )//.createMediaSource(url)
+            C.TYPE_DASH -> DashMediaSource.Factory(
+                DefaultDataSourceFactory(
+                    this, null,
+                    getHttpDataSourceFactory(preview)
+                )
+            )//.createMediaSource(url)
+            C.TYPE_HLS -> HlsMediaSource.Factory(getDataSourceFactory(preview))//.createMediaSource(uri)
+            C.TYPE_OTHER -> ProgressiveMediaSource.Factory(getDataSourceFactory(preview))//.createMediaSource(uri)
+            else -> null
+        }?.createMediaSource(url)
+    }
+
+    private fun getDataSourceFactory(preview: Boolean): DataSource.Factory {
+        return DefaultDataSourceFactory(
+            this, if (preview) null else bandwidthMeter,
+            getHttpDataSourceFactory(preview)
+        )
+    }
+
+    private fun getHttpDataSourceFactory(preview: Boolean): DataSource.Factory {
+        return DefaultHttpDataSourceFactory(
+            Util.getUserAgent(
+                this,
+                "AnimeWorld"
+            ), if (preview) null else bandwidthMeter
+        )
     }
 
 }

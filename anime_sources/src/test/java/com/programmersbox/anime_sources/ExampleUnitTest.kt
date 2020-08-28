@@ -3,6 +3,7 @@ package com.programmersbox.anime_sources
 import com.programmersbox.anime_sources.models.AnimeFlix
 import com.programmersbox.anime_sources.models.KickAssAnime
 import com.programmersbox.anime_sources.models.KissAnimeFree
+import com.programmersbox.anime_sources.utils.toJsoup
 import com.programmersbox.gsonutils.getApi
 import com.programmersbox.gsonutils.getJsonApi
 import io.reactivex.Single
@@ -11,6 +12,11 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.junit.After
 import org.junit.Test
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
+import java.nio.channels.Channels
+import java.nio.channels.ReadableByteChannel
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -273,12 +279,63 @@ class ExampleUnitTest {
         //println(getApi(f))
         //println(Jsoup.connect("https://animeflix.io/api/anime/latest?limit=12").get())
 
-        val f = AnimeFlix.getRecent(1).blockingGet()
-        println(f)
-        val e = f.firstOrNull()?.let { AnimeFlix.getEpisodeInfo(it).blockingGet() }
-        println(e)
+        val f = AnimeFlix.getRecent(2).blockingGet()
+        //println(f)
+        val e = f.random().let { AnimeFlix.getEpisodeInfo(it).blockingGet() }
+        //println(e)
         val v = e?.episodes?.first()?.let { AnimeFlix.getVideoLink(it).blockingGet() }
-        println(v)
+        //println(v)
+
+        val z = v?.firstOrNull()
+        println(z)
+        z?.link?.let { downloadFile(it) }
+
+        println("Done")
+    }
+
+    private fun downloadFile(url: String) {
+        try {
+            val website = URL(url)
+            val rbc: ReadableByteChannel = Channels.newChannel(website.openStream())
+            val fos = FileOutputStream("/Users/jrein/Documents/video.mp4")
+            fos.channel.transferFrom(rbc, 0, Long.MAX_VALUE)
+            /*BufferedInputStream(URL(url).openStream()).use { inputStream ->
+                FileOutputStream("/Users/jrein/Documents/video.mp4").use { fileOS ->
+                    val data = ByteArray(1024)
+                    var byteContent: Int
+                    while (inputStream.read(data, 0, 1024).also { byteContent = it } != -1) {
+                        fileOS.write(data, 0, byteContent)
+                    }
+                }
+            }*/
+        } catch (e: IOException) {
+            // handles IO exceptions
+            e.printStackTrace()
+        }
+    }
+
+    @Test
+    fun yesmovies() {
+        val f = "https://yesmovies.ag/movie/filter/series.html".toJsoup()
+        //println(f)
+
+        val showInfo = f.select("div.ml-item").map {
+            ShowInfo(
+                name = it.select("a.ml-mask").attr("title"),
+                url = it.select("a.ml-mask").attr("abs:href"),
+                sources = Sources.KISSANIMEFREE
+            )
+        }
+
+        //println(showInfo)
+
+        val e = "${showInfo.first().url.removeSuffix(".html")}/watching.html".toJsoup()
+        //println(e)
+
+        val z = e.select("ul#episodes-sv-1")
+        println(z)
+
+
     }
 
 }
