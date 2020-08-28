@@ -48,6 +48,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : RxWorker(
     override fun createWork(): Single<Result> {
         Loged.f("Starting check here")
         applicationContext.lastUpdateCheck = System.currentTimeMillis()
+        applicationContext.lastUpdateCheck?.let { updateCheckPublish.onNext(it) }
         return Single.create<List<ShowDbModel>> { emitter ->
             Loged.f("Start")
             val list = listOf(

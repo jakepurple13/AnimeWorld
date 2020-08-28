@@ -290,13 +290,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             requireContext().lastUpdateCheck
                 ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
                 ?.let { s.summary = it }
+
+            updateCheckPublish
+                .map { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
+                .subscribe { s.summary = it }
+                .addTo(disposable)
         }
 
         findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
             s.setDefaultValue(requireContext().updateCheck)
-            /*requireContext().lastUpdateCheck
-                ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
-                ?.let { s.summary = it }*/
             s.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
                     requireContext().updateCheck = newValue
