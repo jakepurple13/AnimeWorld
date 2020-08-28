@@ -17,6 +17,11 @@
             app:key="about_version"
             app:title="Version: " />
 
+        <Preference
+            app:enabled="false"
+            app:title="Last Time Updates Were Checked"
+            app:key="sync_time" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="View">
@@ -79,22 +84,20 @@
             app:useSimpleSummaryProvider="true" />-->
 
         <ListPreference
-            app:icon="@drawable/ic_baseline_brightness_4_24"
-            app:dialogIcon="@drawable/ic_baseline_brightness_4_24"
-            app:entries="@array/theme_items"
-            app:dialogTitle="Choose a Theme"
-            app:entryValues="@array/theme_values"
             app:defaultValue="system"
+            app:dialogIcon="@drawable/ic_baseline_brightness_4_24"
+            app:dialogTitle="Choose a Theme"
+            app:entries="@array/theme_items"
+            app:entryValues="@array/theme_values"
+            app:icon="@drawable/ic_baseline_brightness_4_24"
+            app:key="theme_setting"
             app:persistent="true"
-            app:useSimpleSummaryProvider="true"
             app:title="Theme"
-            app:key="theme_setting" />
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:title="@string/sync_header"
-        app:key="sync_time">
+    <PreferenceCategory app:title="@string/sync_header">
 
         <SwitchPreferenceCompat
             app:key="sync"

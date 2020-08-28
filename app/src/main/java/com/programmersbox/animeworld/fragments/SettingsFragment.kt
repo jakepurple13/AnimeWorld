@@ -1,10 +1,10 @@
 package com.programmersbox.animeworld.fragments
 
 import android.Manifest
-import android.app.UiModeManager
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
@@ -27,7 +27,6 @@ import com.programmersbox.animeworld.utils.*
 import com.programmersbox.gsonutils.fromJson
 import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
-import com.programmersbox.helpfulutils.uiModeManager
 import com.programmersbox.rxutils.invoke
 import com.programmersbox.thirdpartyutils.into
 import com.programmersbox.thirdpartyutils.openInCustomChromeBrowser
@@ -50,9 +49,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         accountSettings()
+        aboutSettings()
         viewSettings()
         generalSettings()
-        aboutSettings()
         syncSettings()
     }
 
@@ -131,6 +130,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+        findPreference<Preference>("sync_time")?.let { s ->
+            requireContext().lastUpdateCheck
+                ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
+                ?.let { s.summary = it }
+
+            updateCheckPublish
+                .map { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
+                .subscribe { s.summary = it }
+                .addTo(disposable)
+        }
+
     }
 
     private fun viewSettings() {
@@ -186,13 +196,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<ListPreference>("theme_setting")?.let { p ->
             p.setDefaultValue("system")
             p.setOnPreferenceChangeListener { _, newValue ->
-                val uiManager = requireContext().uiModeManager
                 when (newValue) {
-                    "system" -> UiModeManager.MODE_NIGHT_AUTO
-                    "light" -> UiModeManager.MODE_NIGHT_NO
-                    "dark" -> UiModeManager.MODE_NIGHT_YES
+                    "system" -> AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                    "light" -> AppCompatDelegate.MODE_NIGHT_NO
+                    "dark" -> AppCompatDelegate.MODE_NIGHT_YES
                     else -> null
-                }?.let(uiManager::setNightMode)
+                }?.let(AppCompatDelegate::setDefaultNightMode)
                 true
             }
         }
@@ -284,17 +293,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 )
                 true
             }
-        }
-
-        findPreference<PreferenceCategory>("sync_time")?.let { s ->
-            requireContext().lastUpdateCheck
-                ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
-                ?.let { s.summary = it }
-
-            updateCheckPublish
-                .map { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
-                .subscribe { s.summary = it }
-                .addTo(disposable)
         }
 
         findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
