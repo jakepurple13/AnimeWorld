@@ -17,6 +17,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ncorti.slidetoact.SlideToActView
 import com.programmersbox.anime_db.EpisodeWatched
 import com.programmersbox.anime_db.ShowDatabase
@@ -125,6 +126,18 @@ class ShowInfoFragment : Fragment() {
         (showBuilder ?: args.showInfo)?.fromJson<ShowInfo>()?.getEpisodeInfo()
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
+            ?.doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Very sorry but this show doesn't work")
+                    .setMessage(it.message)
+                    .setPositiveButton("Return") { d, _ ->
+                        d.dismiss()
+                        requireActivity().onBackPressed()
+                    }
+                    .setNegativeButton("Stay to View Information") { d, _ -> d.dismiss() }
+                    .show()
+            }
             ?.subscribeBy {
                 println(it)
                 binding.show = it

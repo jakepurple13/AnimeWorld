@@ -21,7 +21,10 @@ enum class Sources(private val api: ShowApi) : ShowApiService by api {
     ANIMETOON(AnimeToonApi), DUBBED_ANIME(AnimeToonDubbed), ANIMETOON_MOVIES(AnimeToonMovies),
 
     //PUTLOCKER(PutLocker), PUTLOCKER_RECENT(PutLockerRecent);
-    KISSANIMEFREE(KissAnimeFree);
+    KISSANIMEFREE(KissAnimeFree),
+    //KICKASSANIME(KickAssAnime)
+    //ANIMEFLIX(AnimeFlix)
+    ;
 
     companion object {
         fun getSourceByUrl(url: String) = values().find { url.contains(it.name, true) }

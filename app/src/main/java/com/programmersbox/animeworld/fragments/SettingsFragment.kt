@@ -1,15 +1,13 @@
 package com.programmersbox.animeworld.fragments
 
 import android.Manifest
+import android.app.UiModeManager
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SeekBarPreference
-import androidx.preference.SwitchPreferenceCompat
+import androidx.preference.*
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -29,6 +27,7 @@ import com.programmersbox.animeworld.utils.*
 import com.programmersbox.gsonutils.fromJson
 import com.programmersbox.helpfulutils.requestPermissions
 import com.programmersbox.helpfulutils.setEnumSingleChoiceItems
+import com.programmersbox.helpfulutils.uiModeManager
 import com.programmersbox.rxutils.invoke
 import com.programmersbox.thirdpartyutils.into
 import com.programmersbox.thirdpartyutils.openInCustomChromeBrowser
@@ -39,6 +38,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -49,6 +50,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         accountSettings()
+        viewSettings()
         generalSettings()
         aboutSettings()
         syncSettings()
@@ -109,6 +111,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }.fromJson<AppInfo>()!!
                     requireActivity().runOnUiThread {
                         MaterialAlertDialogBuilder(this@SettingsFragment.requireContext())
+                            .setIcon(R.mipmap.round_logo)
                             .setTitle("Update notes for ${info.version}")
                             .setItems(info.releaseNotes.toTypedArray(), null)
                             .setPositiveButton("OK") { d, _ -> d.dismiss() }
@@ -128,6 +131,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+    }
+
+    private fun viewSettings() {
+        findPreference<Preference>("view_downloads")?.setOnPreferenceClickListener {
+            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
+            findNavController().navigate(R.id.action_settingsFragment2_to_downloadViewerActivity3)
+            true
+        }
+
+        findPreference<Preference>("view_videos")?.setOnPreferenceClickListener {
+            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
+            findNavController().navigate(R.id.action_settingsFragment_to_viewVideosFragment)
+            true
+        }
+
+        findPreference<Preference>("view_favorites")?.setOnPreferenceClickListener {
+            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
+            findNavController().navigate(R.id.action_settingsFragment_to_favoritesFragment)
+            true
+        }
     }
 
     private fun generalSettings() {
@@ -160,22 +183,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-        findPreference<Preference>("view_downloads")?.setOnPreferenceClickListener {
-            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
-            findNavController().navigate(R.id.action_settingsFragment2_to_downloadViewerActivity3)
-            true
-        }
-
-        findPreference<Preference>("view_videos")?.setOnPreferenceClickListener {
-            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
-            findNavController().navigate(R.id.action_settingsFragment_to_viewVideosFragment)
-            true
-        }
-
-        findPreference<Preference>("view_favorites")?.setOnPreferenceClickListener {
-            //context?.startActivity(Intent(requireContext(), DownloadViewerActivity::class.java))
-            findNavController().navigate(R.id.action_settingsFragment_to_favoritesFragment)
-            true
+        findPreference<ListPreference>("theme_setting")?.let { p ->
+            p.setDefaultValue("system")
+            p.setOnPreferenceChangeListener { _, newValue ->
+                val uiManager = requireContext().uiModeManager
+                when (newValue) {
+                    "system" -> UiModeManager.MODE_NIGHT_AUTO
+                    "light" -> UiModeManager.MODE_NIGHT_NO
+                    "dark" -> UiModeManager.MODE_NIGHT_YES
+                    else -> null
+                }?.let(uiManager::setNightMode)
+                true
+            }
         }
 
         findPreference<SeekBarPreference>("battery_alert")?.let { s ->
@@ -267,8 +286,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+        findPreference<PreferenceCategory>("sync_time")?.let { s ->
+            requireContext().lastUpdateCheck
+                ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
+                ?.let { s.summary = it }
+        }
+
         findPreference<SwitchPreferenceCompat>("sync")?.let { s ->
             s.setDefaultValue(requireContext().updateCheck)
+            /*requireContext().lastUpdateCheck
+                ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
+                ?.let { s.summary = it }*/
             s.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
                     requireContext().updateCheck = newValue

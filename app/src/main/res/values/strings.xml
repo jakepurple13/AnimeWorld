@@ -77,4 +77,15 @@
     <string name="gotoBrowser">Go to Browser</string>
     <string name="update">Update</string>
     <string name="updateTitle">There\'s an update! %s</string>
+
+    <string-array name="theme_items">
+        <item>System</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
 </resources>

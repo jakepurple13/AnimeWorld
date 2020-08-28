@@ -19,7 +19,12 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="General">
+    <PreferenceCategory app:title="View">
+
+        <Preference
+            app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
+            app:key="view_downloads"
+            app:title="Downloads" />
 
         <Preference
             app:icon="@drawable/ic_baseline_video_library_24"
@@ -30,6 +35,10 @@
             app:icon="@drawable/ic_baseline_star_24"
             app:key="view_favorites"
             app:title="Favorites" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="General">
 
         <Preference
             app:icon="@android:drawable/ic_menu_preferences"
@@ -69,9 +78,23 @@
             app:title="@string/reply_title"
             app:useSimpleSummaryProvider="true" />-->
 
+        <ListPreference
+            app:icon="@drawable/ic_baseline_brightness_4_24"
+            app:dialogIcon="@drawable/ic_baseline_brightness_4_24"
+            app:entries="@array/theme_items"
+            app:dialogTitle="Choose a Theme"
+            app:entryValues="@array/theme_values"
+            app:defaultValue="system"
+            app:persistent="true"
+            app:useSimpleSummaryProvider="true"
+            app:title="Theme"
+            app:key="theme_setting" />
+
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
+    <PreferenceCategory
+        app:title="@string/sync_header"
+        app:key="sync_time">
 
         <SwitchPreferenceCompat
             app:key="sync"

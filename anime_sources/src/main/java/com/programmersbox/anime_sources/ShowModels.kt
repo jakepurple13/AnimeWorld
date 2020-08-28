@@ -2,6 +2,7 @@ package com.programmersbox.anime_sources
 
 data class ShowInfo(val name: String, val url: String, val sources: Sources) {
     fun getEpisodeInfo() = sources.getEpisodeInfo(this)
+    internal val extras = mutableMapOf<String, Any?>()
 }
 
 data class Episode(

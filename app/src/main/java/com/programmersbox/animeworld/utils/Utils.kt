@@ -26,6 +26,7 @@ import com.programmersbox.anime_sources.ShowInfo
 import com.programmersbox.anime_sources.Sources
 import com.programmersbox.animeworld.R
 import com.programmersbox.gsonutils.sharedPrefNotNullObjectDelegate
+import com.programmersbox.helpfulutils.sharedPrefDelegate
 import com.programmersbox.helpfulutils.sharedPrefNotNullDelegate
 import io.reactivex.subjects.BehaviorSubject
 
@@ -38,6 +39,8 @@ var Context.folderLocation: String by sharedPrefNotNullDelegate(
 var Context.updateCheck: Boolean by sharedPrefNotNullDelegate(true)
 
 var Context.batteryAlertPercentage: Int by sharedPrefNotNullDelegate(20)
+
+var Context.lastUpdateCheck: Long? by sharedPrefDelegate(null)
 
 var Context.downloadOrStream: Boolean by sharedPrefNotNullDelegate(true)
 

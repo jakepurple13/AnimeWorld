@@ -181,11 +181,11 @@ class ViewVideosFragment : Fragment() {
     private fun getListFiles2(parentDir: File): ArrayList<File> {
         val inFiles = arrayListOf<File>()
         val files = LinkedList<File>()
-        files.addAll(parentDir.listFiles())
+        files.addAll(parentDir.listFiles().orEmpty())
         while (!files.isEmpty()) {
             val file = files.remove()
             if (file.isDirectory) {
-                files.addAll(file.listFiles())
+                files.addAll(file.listFiles().orEmpty())
             } else if (file.name.endsWith(".mp4")) {
                 inFiles.add(file)
             }
