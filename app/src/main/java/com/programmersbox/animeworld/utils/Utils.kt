@@ -36,6 +36,8 @@ var Context.folderLocation: String by sharedPrefNotNullDelegate(
     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString() + "/AnimeWorld/"
 )
 
+var Context.developerModeActivated: Boolean by sharedPrefNotNullDelegate(false)
+
 var Context.updateCheck: Boolean by sharedPrefNotNullDelegate(true)
 
 var Context.batteryAlertPercentage: Int by sharedPrefNotNullDelegate(20)

@@ -130,6 +130,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+        var count = 1
+
+        val sequence = CustomTimedSequenceMaker<Int>(requireContext(), listOf(1, 2, 3, 4, 5, 6, 7)) {
+            findPreference<Preference>("developer_mode")?.isVisible = true
+            requireContext().developerModeActivated = true
+        }.sequenceReset { count = 1 }
+
         findPreference<Preference>("sync_time")?.let { s ->
             requireContext().lastUpdateCheck
                 ?.let { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
@@ -139,6 +146,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 .map { SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(it) }
                 .subscribe { s.summary = it }
                 .addTo(disposable)
+
+            s.setOnPreferenceClickListener {
+                sequence.add(count)
+                count++
+                true
+            }
+
+        }
+
+        findPreference<Preference>("developer_mode")?.let { p ->
+            p.isVisible = requireContext().developerModeActivated
+            p.setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Do you want to remove Developer Options?")
+                    .setPositiveButton("Yes") { d, _ ->
+                        requireContext().developerModeActivated = false
+                        p.isVisible = false
+                        count = 1
+                        d.dismiss()
+                    }
+                    .setNegativeButton("No") { d, _ -> d.dismiss() }
+                    .show()
+                true
+            }
         }
 
     }

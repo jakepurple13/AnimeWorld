@@ -122,8 +122,9 @@ class ShowInfoFragment : Fragment() {
 
         println(args)
         println(args.showInfo)
+        println(args.showInfo1)
 
-        (showBuilder ?: args.showInfo)?.fromJson<ShowInfo>()?.getEpisodeInfo()
+        (showBuilder?.fromJson<ShowInfo>() ?: args.showInfo1)?.getEpisodeInfo()
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.doOnError {

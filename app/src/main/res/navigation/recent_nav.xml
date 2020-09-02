@@ -34,6 +34,11 @@
         <action
             android:id="@+id/action_showInfoFragment2_to_videoPlayerActivity2"
             app:destination="@id/videoPlayerActivity3" />
+        <argument
+            android:name="showInfo1"
+            app:argType="com.programmersbox.anime_sources.ShowInfo"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <activity
         android:id="@+id/downloadViewerActivity"

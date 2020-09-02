@@ -76,5 +76,10 @@
             android:id="@+id/action_showInfoFragment3_pop"
             app:popUpTo="@id/showInfoFragment3"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="showInfo1"
+            app:argType="com.programmersbox.anime_sources.ShowInfo"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>

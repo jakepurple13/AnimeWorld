@@ -173,13 +173,23 @@ class FavoritesFragment : BaseFragment() {
                 //println(navController.currentDestination)
                 if (info.size == 1) {
                     binding.root.findNavController()
-                        .navigate(FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(info.first().toShow().toJson()))
+                        .navigate(
+                            FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(
+                                info.first().toShow().toJson(),
+                                info.first().toShow()
+                            )
+                        )
                 } else {
                     MaterialAlertDialogBuilder(itemView.context)
                         .setTitle("Choose Source")
                         .setItems(info.map { "${it.source} - ${it.title}" }.toTypedArray()) { d, i ->
                             binding.root.findNavController()
-                                .navigate(FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(info[i].toShow().toJson()))
+                                .navigate(
+                                    FavoritesFragmentDirections.actionFavoritesFragmentToShowInfoFragment3(
+                                        info[i].toShow().toJson(),
+                                        info[i].toShow()
+                                    )
+                                )
                             d.dismiss()
                         }
                         .show()

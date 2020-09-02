@@ -170,7 +170,7 @@ class AllFragment : BaseFragment() {
             binding.favoriteHeart.check(list.any { it.showUrl == info.url })
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                binding.root.findNavController().navigate(AllFragmentDirections.actionAllFragment2ToShowInfoFragment2(info.toJson()))
+                binding.root.findNavController().navigate(AllFragmentDirections.actionAllFragment2ToShowInfoFragment2(info.toJson(), info))
             }
             binding.executePendingBindings()
         }

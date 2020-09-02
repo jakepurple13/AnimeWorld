@@ -18,9 +18,14 @@
             app:title="Version: " />
 
         <Preference
-            app:enabled="false"
+            app:enabled="true"
             app:title="Last Time Updates Were Checked"
             app:key="sync_time" />
+
+        <Preference
+            app:title="Developer Options"
+            app:isPreferenceVisible="false"
+            app:key="developer_mode" />
 
     </PreferenceCategory>
 

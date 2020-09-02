@@ -167,7 +167,7 @@ class RecentFragment : BaseFragment() {
             binding.favoriteHeart.check(list.any { it.showUrl == info.url })
             binding.root.setOnClickListener {
                 //println(navController.currentDestination)
-                binding.root.findNavController().navigate(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson()))
+                binding.root.findNavController().navigate(RecentFragmentDirections.actionRecentFragmentToShowInfoFragment(info.toJson(), info))
             }
             binding.executePendingBindings()
         }

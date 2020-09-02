@@ -1,6 +1,8 @@
 package com.programmersbox.anime_sources
 
-data class ShowInfo(val name: String, val url: String, val sources: Sources) {
+import java.io.Serializable
+
+data class ShowInfo(val name: String, val url: String, val sources: Sources) : Serializable {
     fun getEpisodeInfo() = sources.getEpisodeInfo(this)
     internal val extras = mutableMapOf<String, Any?>()
 }
