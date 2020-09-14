@@ -85,7 +85,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.11.8'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.11.8'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.8'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.8'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.12.0'
     implementation 'androidx.mediarouter:mediarouter:1.1.0'
 
     def nav_version = "2.3.0"
