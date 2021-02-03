@@ -135,7 +135,7 @@ dependencies {
 
     implementation 'com.facebook.stetho:stetho:1.5.1'
 
-    implementation "com.mikepenz:aboutlibraries-core:8.3.0"
+    implementation "com.mikepenz:aboutlibraries-core:8.7.1"
     implementation "com.mikepenz:aboutlibraries:8.3.0"
 
     implementation 'com.github.rubensousa:previewseekbar-exoplayer:2.11.4.0'
