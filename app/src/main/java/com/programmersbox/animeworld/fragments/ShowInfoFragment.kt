@@ -259,7 +259,7 @@ class ShowInfoFragment : Fragment() {
     }
 
     private fun moreInfoSetup() {
-        var set = ConstraintRangeSet(
+        /*var set = ConstraintRangeSet(
             showInfoFullLayout,
             ConstraintRanges(
                 showInfoFullLayout,
@@ -271,8 +271,8 @@ class ShowInfoFragment : Fragment() {
                 ConstraintSet().apply { clone(showInfoLayout) },
                 ConstraintSet().apply { clone(this@ShowInfoFragment.requireContext(), R.layout.show_info_detail_layout_alt) }
             )
-        )
-        moreInfo.setOnClickListener { set++ }
+        )*/
+        //moreInfo.setOnClickListener { set++ }
     }
 
     private class ConstraintRangeSet(private val rootLayout: ConstraintLayout, vararg items: ConstraintRanges) : Range<ConstraintRanges>() {

@@ -10,10 +10,11 @@
             type="com.programmersbox.anime_sources.Episode" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/showInfoFullLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layoutDescription="@xml/fragment_show_info_xml_showinfofulllayout_scene"
         tools:context=".fragments.ShowInfoFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -142,12 +143,12 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="5dp"
                 android:textColor="?android:colorForeground"
-                app:strokeColor="?android:colorForeground"
                 app:icon="@drawable/ic_baseline_vertical_align_bottom_24"
+                app:iconTint="?android:colorForeground"
                 app:layout_constraintBottom_toBottomOf="@id/favoriteshow"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/favoriteshow"
-                app:iconTint="?android:colorForeground"
+                app:strokeColor="?android:colorForeground"
                 tools:ignore="HardcodedText" />
 
             <com.airbnb.lottie.LottieAnimationView
@@ -171,10 +172,10 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="5dp"
                 android:text="Mark As..."
+                android:textColor="?android:colorForeground"
                 app:layout_constraintBottom_toBottomOf="@id/favoriteshow"
                 app:layout_constraintEnd_toStartOf="@id/shareButton"
                 app:layout_constraintTop_toTopOf="@id/favoriteshow"
-                android:textColor="?android:colorForeground"
                 app:strokeColor="?android:colorForeground"
                 tools:ignore="HardcodedText" />
 
@@ -184,13 +185,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="5dp"
-                app:icon="@android:drawable/ic_menu_share"
                 android:textColor="?android:colorForeground"
-                app:strokeColor="?android:colorForeground"
+                app:icon="@android:drawable/ic_menu_share"
                 app:iconTint="?android:colorForeground"
                 app:layout_constraintBottom_toBottomOf="@id/favoriteshow"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintTop_toTopOf="@id/favoriteshow"
+                app:strokeColor="?android:colorForeground"
                 tools:ignore="HardcodedText" />
 
             <com.google.android.material.button.MaterialButton
@@ -199,13 +200,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="5dp"
-                app:icon="@drawable/ic_baseline_more_vert_24"
                 android:textColor="?android:colorForeground"
-                app:strokeColor="?android:colorForeground"
+                app:icon="@drawable/ic_baseline_more_vert_24"
                 app:iconTint="?android:colorForeground"
                 app:layout_constraintBottom_toBottomOf="@id/favoriteshow"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/favoriteshow"
+                app:strokeColor="?android:colorForeground"
                 tools:ignore="HardcodedText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -256,11 +257,11 @@
             android:layout_margin="0dp"
             android:insetBottom="0dp"
             android:padding="0dp"
+            android:text="More Info"
             android:textColor="?android:colorForeground"
             app:backgroundTint="?android:colorButtonNormal"
-            android:text="More Info"
             app:cornerRadius="0dp"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
