@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.2.0'
     implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3-native-mt'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.4.1'
 
