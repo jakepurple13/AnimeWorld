@@ -51,7 +51,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation "com.squareup.okhttp3:okhttp:4.9.1"
     implementation "com.squareup.okhttp3:okhttp-dnsoverhttps:4.8.1"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-native-mt'
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'com.github.smart-fun:XmlToJson:1.4.5'
     implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
